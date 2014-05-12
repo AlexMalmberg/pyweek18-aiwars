@@ -15,12 +15,20 @@ class Action(object):
     cost = defense + 0.5 * (defense - attack)
     cost *= 1.3
     cost = base_cost * 10 ** cost
-    return int(cost)
+    cost = int(cost)
+    if cost > 0:
+      return cost
+    else:
+      return 1
 
   def _CostLevel(self, base_cost, level):
     cost = level * 1.3
     cost = base_cost * 10 ** cost
-    return int(cost)
+    cost = int(cost)
+    if cost > 0:
+      return cost
+    else:
+      return 1
 
   def Execute(self):
     raise NotImplemented()
