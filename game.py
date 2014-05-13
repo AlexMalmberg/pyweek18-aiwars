@@ -20,38 +20,84 @@ class Research(object):
 class GameState(object):
   def __init__(self):
     self.nodes = []
+    self.glbls = []
     self.research_level = [0] * Research.Num
+    self.human_level = [0] * Research.Num
+    self.human_paranoia_level = 0
+
+    # Each turn is 1 hour.
     self.turn = 0
-    self.unspent_flops = 0
-    self.spent_flops = 0
+    self.raw_material = 0
+
+    self.current_action = None
+    self.action_progress = 0
+    self.action_cost = 0
 
   def AddNode(self, node):
     self.nodes.append(node)
 
-  def StartTurn(self):
+  def AddGlobal(self, g):
+    self.glbls.append(g)
+
+  def SetCurrentAction(self, action):
+    self.current_action = action
+    self.action_cost = action.Cost()
+    self.action_progress = 0
+
+  def AdvanceTurn(self):
+    self.turn += 1
+    if self.current_action:
+      self.action_progress += self.Flops()
+      if self.action_progress > self.action_cost:
+        self.current_action.Execute()
+        self.current_action = None
+
+    for n in self.nodes:
+      n.EndOfTurnUpdate(self)
+
+    for g in self.glbls:
+      g.EndOfTurnUpdate(self)
+
+  def PopulationFlops(self):
+    pop_flops = 0
+    for n in self.nodes:
+      pop_flops += n.PopulationFlops()
+    return pop_flops
+
+  def Flops(self):
     flops = 0
     for n in self.nodes:
-      flops += n.ControlledFlops()
-    self.unspent_flops += flops
-    self.spent_flops = 0
+      flops += n.Flops()
+    for g in self.glbls:
+      flops += g.Flops(self)
+    return flops
 
-  def EndTurn(self):
-    self.turn += 1
-
-  def ExecuteAction(self, action):
-    cost = action.Cost()
-    self.spent_flops = self.spent_flops + cost
-    self.unspent_flops = self.unspent_flops - cost
-    action.Execute()
+  def GiveRawMaterial(self, amount):
+    self.raw_material += int(amount)
 
   def Print(self):
     print '== GameState %r' % self
     print 'Turn %i' % self.turn
-    print 'Unspent flops: %s' % misc.FormatFlops(self.unspent_flops)
-    print '  Spent flops: %s' % misc.FormatFlops(self.spent_flops)
+    print 'Raw material: %i' % self.raw_material
+    flops = self.Flops()
+    print 'Current flops: %s' % misc.FormatFlops(flops)
+    if self.current_action:
+      print '= Action: %r' % self.current_action
+      print 'Progress: %s / %s' % (misc.FormatFlops(self.action_progress),
+                                   misc.FormatFlops(self.action_cost))
+      if flops:
+        print ('(%i turns left)'
+               % ((self.action_cost - self.action_progress) / flops))
     print '= Research:'
     for i in xrange(Research.Num):
       print '%10s: %i' % (Research.Names[i], self.research_level[i])
+    print '= Humans:'
+    for i in xrange(Research.Num):
+      print '%10s: %i' % (Research.Names[i], self.human_level[i])
+    print 'Paranoia level: %i' % self.human_paranoia_level
     print '= Nodes:'
     for n in self.nodes:
+      print '%r' % n
+    print '= Globals:'
+    for n in self.glbls:
       print '%r' % n

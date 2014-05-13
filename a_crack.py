@@ -1,5 +1,6 @@
 import action
 import game
+import params
 
 
 class Crack(action.Action):
@@ -12,8 +13,11 @@ class Crack(action.Action):
   def Cost(self):
     defense = self.node.crack_defense
     attack = self.game_state.research_level[game.Research.Cracking]
-    return self._CostAttackDefense(400, attack, defense)
+    return self._CostAttackDefense(4e6, attack, defense)
 
   def Execute(self):
     self.node.control = True
-    self.node.flops_steal_fraction = 20
+    self.node.Captured()
+    self.node.steal_fraction = 20
+    self.node.immune_until = (
+      self.game_state.turn + params.CrackedNodeImmunePeriod)

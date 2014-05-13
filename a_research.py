@@ -11,7 +11,10 @@ class Research(action.Action):
 
   def Cost(self):
     target_level = self.game_state.research_level[self.tech] + 1
-    return self._CostLevel(500, target_level)
+    return self._CostLevel(5e5, target_level)
 
   def Execute(self):
     self.game_state.research_level[self.tech] += 1
+
+  def __repr__(self):
+    return '%s(%s)' % (self.__class__.__name__, game.Research.Names[self.tech])

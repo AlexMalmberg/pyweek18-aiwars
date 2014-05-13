@@ -2,19 +2,30 @@ import misc
 
 
 class Node(object):
-  def __init__(self, pos, flops, crack_defense):
+  def __init__(self, pos):
     self.pos = pos
-    self.flops = int(flops)
     self.control = False
-    self.crack_defense = crack_defense
-    self.flops_steal_fraction = 0
+    self.immune_until = 0
 
-  def ControlledFlops(self):
-    if not self.control:
-      return 0
-    return self.flops * self.flops_steal_fraction / 100
+  def Flops(self):
+    return 0
+
+  def PopulationFlops(self):
+    return 0
+
+  def Captured(self):
+    pass
+
+  def Discovered(self):
+    # TODO: notify somehow
+    self.control = False
+
+  def EndOfTurnUpdate(self, game_state):
+    pass
+
+  def __attrrepr__(self):
+    return ('pos=%r, control=%r, immune_until=%i'
+            % (self.pos, self.control, self.immune_until))
 
   def __repr__(self):
-    return ('%s(%r, %s, %r, %i)'
-            % (self.__class__.__name__, self.pos, misc.FormatFlops(self.flops),
-               self.control, self.crack_defense))
+    return ('%s(%s)' % (self.__class__.__name__, self.__attrrepr__()))
