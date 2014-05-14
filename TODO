@@ -34,8 +34,8 @@
 
 - phase 2a
 
-T basic graphics setip
-T text rendering
+* basic graphics setup
+* text rendering
 
 
 - phase 2b
