@@ -1,4 +1,5 @@
 import pygame
+import sys
 from OpenGL import GL
 
 
@@ -36,3 +37,54 @@ class Render(object):
 
   def PixelsToScreen(self, pixels):
     return pixels / float(self.height) * 2.0
+
+
+  def LoadTextureArray(self, files):
+    t = GL.glGenTextures(1)
+    GL.glBindTexture(GL.GL_TEXTURE_2D_ARRAY, t)
+    surfs = [pygame.image.load(f) for f in files]
+    width = surfs[0].get_width()
+    height = surfs[0].get_height()
+
+    GL.glTexParameteri(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_MIN_FILTER,
+                       GL.GL_LINEAR_MIPMAP_LINEAR)
+    GL.glTexParameteri(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_MAG_FILTER,
+                       GL.GL_LINEAR)
+    GL.glTexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE)
+    GL.glTexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_WRAP_S,
+                      GL.GL_CLAMP_TO_EDGE)
+    GL.glTexParameter(GL.GL_TEXTURE_2D_ARRAY, GL.GL_TEXTURE_WRAP_T,
+                      GL.GL_CLAMP_TO_EDGE)
+
+    GL.glTexImage3D(GL.GL_TEXTURE_2D_ARRAY, 0, GL.GL_RGBA8,
+                    width, height, len(files), 0,
+                    GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+                    None)
+
+    for i, s in enumerate(surfs):
+      GL.glTexSubImage3D(GL.GL_TEXTURE_2D_ARRAY, 0,
+                         0, 0, i, width, height, 1,
+                         GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+                         pygame.image.tostring(s, 'RGBA', 1))
+
+    return t
+
+  def BuildShader(self, vertex_shader_src, fragment_shader_src):
+    program = GL.glCreateProgram()
+
+    for kind, src in ((GL.GL_VERTEX_SHADER, vertex_shader_src),
+                      (GL.GL_FRAGMENT_SHADER, fragment_shader_src)):
+      if not src:
+        continue
+      shader = GL.glCreateShader(kind)
+      GL.glShaderSource(shader, [src])
+      GL.glCompileShader(shader)
+      result = GL.glGetShaderiv(shader, GL.GL_COMPILE_STATUS)
+      if not result:
+        print ('shader compilation failed: %s'
+               % GL.glGetShaderInfoLog(shader))
+        sys.exit(1)
+      GL.glAttachShader(program, shader)
+      GL.glDeleteShader(shader)
+    GL.glLinkProgram(program)
+    return program
