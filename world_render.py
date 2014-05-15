@@ -112,7 +112,6 @@ void main(){
     else:
       self._AddMiniQuad(x, y, self.z_water,
                         ((0, 0), (1, 0), (1, 1), (0, 1)))
-      print 'solid'
 
   def _GenTileSide(self, x, y, n, tc):
     if n == world.Water:
@@ -122,11 +121,9 @@ void main(){
       self._AddMiniQuad(x, y, self.GetRandomLine(), tc)
 
   def _GenTile(self, x, y):
-    print '_GenTile: %i, %i' % (x, y)
     me = self.world.map[x][y]
     if me == world.Land:
       self._AddFullQuad(x, y, self.z_land)
-      print 'Generate single quad with land texture for entire tile.'
       return
     n = []
     for dy in (-1, 0, 1):
@@ -135,7 +132,6 @@ void main(){
           n.append(self._GetNeighbour(x + dx, y + dy))
     if all(a == world.Water for a in n):
       self._AddFullQuad(x, y, self.z_water)
-      print 'Generate single quad with water texture for entire tile.'
       return
 
     self._AddMiniQuad(3 * x + 1, 3 * y + 1, self.z_water,
@@ -216,12 +212,11 @@ void main(){
   def Draw(self):
     glPushMatrix(GL_MODELVIEW)
     glTranslate(-0.8, -0.8, 0)
-    glScale(0.05, 0.05, 1)
+    glScale(0.03, 0.03, 1)
     glUseProgram(self.prg)
     glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
     l = glGetUniformLocation(self.prg, 'texture_atlas')
     glUniform1i(l, 0)
-    #glEnable(GL_TEXTURE_3D)
     glBegin(GL_QUADS)
     for c, tc in zip(self.quad_coord, self.quad_tcoord):
       glTexCoord3f(tc[0], tc[1], tc[2])
