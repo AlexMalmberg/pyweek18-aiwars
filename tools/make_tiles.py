@@ -12,7 +12,7 @@ Land = (255, 205, 86)
 
 Size = 64
 Offset = 16
-Brush = 4
+Brush = 6
 
 
 def Line(t):
@@ -44,14 +44,18 @@ def InsideCircleNormal(t):
   return (-math.sin(t), math.cos(t))
 
 
-def SetPixel(img, x, y, t):
+def SetPixel(img, x, y, t, dx, dy, nearest):
   if x < 0 or x >= Size or y < 0 or y >= Size:
     return
-  if not img[y * Size + x]:
-    img[y * Size + x] = t
+  if nearest:
+    d = dx * dx + dy * dy
+    if d > nearest[y * Size + x]:
+      return
+    nearest[y * Size + x] = d
+  img[y * Size + x] = t
 
 
-def BrushAt(img, x, y, brush, t):
+def BrushAt(img, x, y, brush, t, nearest=None):
   x = int(round(x))
   y = int(round(y))
 
@@ -59,7 +63,7 @@ def BrushAt(img, x, y, brush, t):
     for dy in xrange(-brush, brush + 1):
       if dx * dx + dy * dy > brush * brush:
         continue
-      SetPixel(img, x + dx, y + dy, t)
+      SetPixel(img, x + dx, y + dy, t, dx, dy, nearest)
 
 
 Subdivs = 8
@@ -68,10 +72,11 @@ def MakeTile(func, normal):
   ts = []
   ts.append(0)
 
-  dt = 1. / (Subdivs + 2)
+  #dt = 1. / (Subdivs + 2)
+  dt = 1. / Subdivs
   for i in xrange(1, Subdivs):
-    ii = i + 1
-    t = random.uniform(ii * dt - dt * 0.4, ii * dt + dt * 0.4)
+    #ii = i + 1
+    t = random.uniform(i * dt - dt * 0.4, i * dt + dt * 0.4)
     ts.append(t)
 
   ts.append(1)
@@ -85,7 +90,10 @@ def MakeTile(func, normal):
   xs.append(base_points[0][0])
   ys.append(base_points[0][1])
   for i in xrange(1, Subdivs):
-    ofs = random.normalvariate(0, Size * 0.02)
+    if i == 1 or i == Subdivs - 1:
+      ofs = 0
+    else:
+      ofs = random.normalvariate(0, Size * 0.02)
     xs.append(base_points[i][0] + ofs * normal[i][0])
     ys.append(base_points[i][1] + ofs * normal[i][1])
 
@@ -98,18 +106,21 @@ def MakeTile(func, normal):
   image = (ctypes.c_ubyte * (Size * Size))()
   line = (ctypes.c_ubyte * (Size * Size))()
   line_alpha = (ctypes.c_ubyte * (Size * Size))()
-  steps = Size * 4
+  steps = Size
   for i in xrange(steps + 1):
     t = i / float(steps)
     p = (final_x(t), final_y(t))
     BrushAt(image, p[0], p[1], Brush, 1)
     BrushAt(line_alpha, p[0], p[1], Brush, 255)
 
-  for b in xrange(1, int(Brush * 2.5)):
-    for i in xrange(steps + 1):
-      t = i / float(steps)
-      p = (final_x(t), final_y(t))
-      BrushAt(line, p[0], p[1], b, int(255.0 * t))
+  nearest = (ctypes.c_float * (Size * Size))()
+  for i in xrange(Size * Size):
+    nearest[i] = 1e6
+
+  for i in xrange(steps + 1):
+    t = i / float(steps)
+    p = (final_x(t), final_y(t))
+    BrushAt(line, p[0], p[1], Brush * 4, int(255.0 * t), nearest)
 
   return image, line, line_alpha
 
@@ -171,7 +182,7 @@ def MakeFullTile(name, func, nfunc):
 
 
 def main():
-  for i in xrange(16):
+  for i in xrange(32):
     MakeFullTile('line%02i' % i, Line, LineNormal)
 
   for i in xrange(16):
