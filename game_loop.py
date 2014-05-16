@@ -2,6 +2,8 @@ import math
 import pygame
 from OpenGL import GL
 
+import a_crack
+import action
 import misc
 import render_state
 import text
@@ -44,19 +46,32 @@ class GameLoop(object):
     self.dialog = None
     self.animation_time = 0
     self.turn_time = 0
-    self.turn_rate = 500.
+    self.turn_rate = 100.
     self.quit = False
 
     self.world_translate = [-1.6, -1.0]
     self.world_scale = 0.02
 
   def RenderHud(self):
+    flops = self.game_state.Flops()
     self.text.DrawString(-1.55, 0.5, 0.05, (0.2, 1.0, 0.2, 1.0),
-                          misc.FormatFlops(self.game_state.Flops()))
+                          misc.FormatFlops(flops))
     self.text.DrawString(-1.55, 0.45, 0.05, (0.2, 1.0, 0.2, 1.0),
                           'Turn: %i' % self.game_state.turn)
     self.text.DrawString(-1.55, 0.40, 0.05, (0.2, 1.0, 0.2, 1.0),
                           'Action: %s' % self.game_state.current_action)
+    if self.game_state.current_action:
+      a = self.game_state.current_action
+      self.text.DrawString(
+        -1.55, 0.35, 0.05, (0.2, 1.0, 0.2, 1.0),
+         'Progress: %s / %s'
+         % (misc.FormatFlops(self.game_state.action_progress),
+            misc.FormatFlops(self.game_state.action_cost)))
+      if flops:
+        self.text.DrawString(
+          -1.55, 0.30, 0.05, (0.2, 1.0, 0.2, 1.0),
+           '(%i turns left)'
+           % ((self.game_state.action_cost - self.game_state.action_progress) / flops))
 
   def RenderNodes(self):
     GL.glBegin(GL.GL_QUADS)
@@ -102,6 +117,12 @@ class GameLoop(object):
     y = (y - self.world_translate[1]) / self.world_scale / 3.
     return x, y
 
+  def NodeAt(self, x, y):
+    for n in self.game_state.nodes:
+      if n.pos.x == x and n.pos.y == y:
+        return n
+    return None
+
   def Play(self):
     clock = pygame.time.Clock()
 
@@ -128,6 +149,16 @@ class GameLoop(object):
         if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
           x, y = self.ScreenToWorld(*e.pos)
           print 'click at %5.2f %5.2f' % (x, y)
+
+          fx, fy = int(math.floor(x)), int(math.floor(y))
+          n = self.NodeAt(fx, fy)
+          if n is not None:
+            try:
+              a = a_crack.Crack(self.game_state, n)
+              self.game_state.SetCurrentAction(a)
+            except action.ImpossibleAction:
+              # TODO: insert sound effect here
+              pass
           continue
 
         print e
