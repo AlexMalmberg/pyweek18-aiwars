@@ -1,6 +1,11 @@
+import ctypes
 import pygame
 import sys
 from OpenGL import GL
+
+
+F = ctypes.sizeof(ctypes.c_float)
+FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
 
 
 def _MakeWidescreen(width, height):
