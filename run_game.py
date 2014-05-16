@@ -13,6 +13,14 @@ import render_state
 import text
 import world
 
+import a_research
+import n_city
+import n_datacenter
+import n_factory
+import n_mine
+import vec
+
+
 
 def main():
   pygame.init()
@@ -37,6 +45,27 @@ def main():
   w = world.LoadWorld('data/world0.map')
 
   gs = game.GameState(w)
+
+  if 1:
+    nc = n_city.City(vec.Vec(1, 1), 1e6)
+    gs.AddNode(nc)
+
+    n1 = n_datacenter.Datacenter(vec.Vec(5, 5), 1, 2.4e6)
+    gs.AddNode(n1)
+
+    n2 = n_datacenter.Datacenter(vec.Vec(6, 6), 0, 1.5e6)
+    gs.AddNode(n2)
+    n2.control = True
+    n2.steal_fraction = 20
+
+    n3 = n_mine.Mine(vec.Vec(7, 7), 0, 4)
+    gs.AddNode(n3)
+
+    n4 = n_factory.Factory(vec.Vec(8, 8), 0, 4)
+    gs.AddNode(n4)
+
+    a = a_research.Research(gs, game.Research.Cracking)
+    gs.SetCurrentAction(a)
 
   gl = game_loop.GameLoop(render, t, gs)
   gl.Play()
