@@ -61,6 +61,7 @@ class Text(object):
     return self._texture_cache[key]
 
   def DrawString(self, x, y, size, color, msg):
+    msg = str(msg)
     font_size = self.render.ScreenToPixels(size)
     t = self._GetTexture(font_size, msg)
     w = self.render.PixelsToScreen(t.width)
