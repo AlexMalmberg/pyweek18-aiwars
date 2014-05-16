@@ -241,9 +241,6 @@ void main(){
                  GL_STATIC_DRAW)
 
   def Draw(self):
-    glPushMatrix(GL_MODELVIEW)
-    glTranslate(-0.8, -0.8, 0)
-    glScale(0.03, 0.03, 1)
     glUseProgram(self.prg)
     glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
     l = glGetUniformLocation(self.prg, 'texture_atlas')
@@ -260,4 +257,3 @@ void main(){
     glDisableClientState(GL_VERTEX_ARRAY)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY)
     glUseProgram(0)
-    glPopMatrix(GL_MODELVIEW)
