@@ -29,7 +29,7 @@ class Factory(n_stealable.Stealable):
     return self.building
 
   def EndOfTurnUpdate(self, game_state):
-    if self.control:
+    if self.control and self.building:
       self.progress += self.steal_fraction * self.build_per_turn
       if self.progress > self.cost:
         self.target.BuiltOne(self, game_state)
