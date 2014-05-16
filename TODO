@@ -43,9 +43,9 @@
 * map
 * basic map rendering
 
-T main game loop
+* main game loop
 
-T basic HUD
+* basic HUD
 T basic UI actions on nodes
 
 

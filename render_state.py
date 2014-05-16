@@ -43,6 +43,10 @@ class Render(object):
   def PixelsToScreen(self, pixels):
     return pixels / float(self.height) * 2.0
 
+  def ScreenToViewport(self, x, y):
+    x = x * 3.2 / self.width - 1.6
+    y = 1.0 - y * 2.0 / self.height
+    return x, y
 
   def LoadTextureArray(self, files):
     t = GL.glGenTextures(1)

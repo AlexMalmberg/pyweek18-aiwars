@@ -1,3 +1,4 @@
+import math
 import pygame
 from OpenGL import GL
 
@@ -46,6 +47,9 @@ class GameLoop(object):
     self.turn_rate = 500.
     self.quit = False
 
+    self.world_translate = [-1.6, -1.0]
+    self.world_scale = 0.02
+
   def RenderHud(self):
     self.text.DrawString(-1.55, 0.5, 0.05, (0.2, 1.0, 0.2, 1.0),
                           misc.FormatFlops(self.game_state.Flops()))
@@ -68,8 +72,8 @@ class GameLoop(object):
   def RenderWorld(self):
     # TODO: scroll(/zoom?) the map + other stuff tied to map
     GL.glPushMatrix(GL.GL_MODELVIEW)
-    GL.glTranslate(-1.6, -1.0, 0)
-    GL.glScale(0.02, 0.02, 1)
+    GL.glTranslate(self.world_translate[0], self.world_translate[1], 0)
+    GL.glScale(self.world_scale, self.world_scale, 1)
 
     self.world_render.Draw()
     self.RenderNodes()
@@ -92,6 +96,12 @@ class GameLoop(object):
                           '%i %5.3f' % (self.animation_time, self.turn_time))
     pygame.display.flip()
 
+  def ScreenToWorld(self, x, y):
+    x, y = self.render.ScreenToViewport(x, y)
+    x = (x - self.world_translate[0]) / self.world_scale / 3.
+    y = (y - self.world_translate[1]) / self.world_scale / 3.
+    return x, y
+
   def Play(self):
     clock = pygame.time.Clock()
 
@@ -113,4 +123,28 @@ class GameLoop(object):
         if (e.type == pygame.QUIT
             or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE)):
           self.quit = True
+          continue
+
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+          x, y = self.ScreenToWorld(*e.pos)
+          print 'click at %5.2f %5.2f' % (x, y)
+          continue
+
         print e
+
+      keys = pygame.key.get_pressed()
+      if keys[pygame.K_UP]:
+        self.world_translate[1] -= dt / 1000.
+      if keys[pygame.K_DOWN]:
+        self.world_translate[1] += dt / 1000.
+      if keys[pygame.K_LEFT]:
+        self.world_translate[0] += dt / 1000.
+      if keys[pygame.K_RIGHT]:
+        self.world_translate[0] -= dt / 1000.
+
+      # TODO: only for debugging, disable? if not, need to fix
+      # scale/translate order
+      if keys[pygame.K_KP_PLUS]:
+        self.world_scale *= math.exp(dt / 1000. * math.log(1.3))
+      if keys[pygame.K_KP_MINUS]:
+        self.world_scale /= math.exp(dt / 1000. * math.log(1.3))
