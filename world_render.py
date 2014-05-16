@@ -3,13 +3,20 @@ import random
 from OpenGL.GL import *
 
 
+import render_state
 import world
 
 
 class WorldRenderer(object):
+  # 0 - 1: vertex
+  # 2 - 4: tex coord
+  VertStride = 5
+
   def __init__(self, render, world):
     self.render = render
     self.world = world
+    self.vbo_index = None
+    self.vbo_vert = None
 
     files = []
     self.z_land = len(files)
@@ -18,7 +25,7 @@ class WorldRenderer(object):
     files.append('data/tile_water.png')
 
     self.z_line = len(files)
-    self.z_line_num = 16
+    self.z_line_num = 32
     for i in xrange(self.z_line_num):
       files.append('data/line%02i_col.png' % i)
     self.z_ic = len(files)
@@ -47,7 +54,6 @@ uniform sampler2DArray texture_atlas;
 
 void main(){
   gl_FragColor = texture(texture_atlas, gl_TexCoord[0].xyz);
-//  gl_FragColor = texture(texture_atlas, vec3(gl_TexCoord[0].xy, 2));
 }
 """)
 
@@ -55,8 +61,12 @@ void main(){
 
   def __del__(self):
     try:
-      # TODO: Free buffer objects and stuff.
-      pass
+      if self.vbo_index is not None:
+        glDeleteBuffers(self.vbo_index)
+        self.vbo_index = None
+      if self.vbo_vert is not None:
+        glDeleteBuffers(self.vbo_vert)
+        self.vbo_vert = None
     except:
       pass
 
@@ -209,6 +219,27 @@ void main(){
       for x in xrange(self.world.width):
         self._GenTile(x, y)
 
+    n = self.num_index = len(self.quad_coord)
+    self.vbo_index, self.vbo_vert = glGenBuffers(2)
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.vbo_index)
+    indices = (ctypes.c_int * n)()
+    for i in xrange(n):
+      indices[i] = i
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ctypes.sizeof(indices), indices,
+                 GL_STATIC_DRAW)
+
+    glBindBuffer(GL_ARRAY_BUFFER, self.vbo_vert)
+    verts = (ctypes.c_float * (n * self.VertStride))()
+    for i in xrange(n):
+      verts[i * self.VertStride + 0] = self.quad_coord[i][0]
+      verts[i * self.VertStride + 1] = self.quad_coord[i][1]
+      verts[i * self.VertStride + 2] = self.quad_tcoord[i][0]
+      verts[i * self.VertStride + 3] = self.quad_tcoord[i][1]
+      verts[i * self.VertStride + 4] = self.quad_tcoord[i][2]
+    glBufferData(GL_ARRAY_BUFFER, ctypes.sizeof(verts), verts,
+                 GL_STATIC_DRAW)
+
   def Draw(self):
     glPushMatrix(GL_MODELVIEW)
     glTranslate(-0.8, -0.8, 0)
@@ -217,11 +248,16 @@ void main(){
     glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
     l = glGetUniformLocation(self.prg, 'texture_atlas')
     glUniform1i(l, 0)
-    glBegin(GL_QUADS)
-    for c, tc in zip(self.quad_coord, self.quad_tcoord):
-      glTexCoord3f(tc[0], tc[1], tc[2])
-      glVertex(c)
-    glEnd()
-    glDisable(GL_TEXTURE_2D)
+    glBindBuffer(GL_ARRAY_BUFFER, self.vbo_vert)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.vbo_index)
+    glEnableClientState(GL_VERTEX_ARRAY)
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+    glVertexPointer(2, GL_FLOAT, self.VertStride * render_state.F,
+                    render_state.FP(0))
+    glTexCoordPointer(3, GL_FLOAT, self.VertStride * render_state.F,
+                      render_state.FP(2))
+    glDrawElements(GL_QUADS, self.num_index, GL_UNSIGNED_INT, None)
+    glDisableClientState(GL_VERTEX_ARRAY)
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY)
     glUseProgram(0)
     glPopMatrix(GL_MODELVIEW)
