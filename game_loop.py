@@ -43,7 +43,7 @@ class GameLoop(object):
     self.dialog = None
     self.animation_time = 0
     self.turn_time = 0
-    self.turn_rate = 2000.
+    self.turn_rate = 500.
     self.quit = False
 
   def RenderHud(self):
@@ -54,14 +54,25 @@ class GameLoop(object):
     self.text.DrawString(-1.55, 0.40, 0.05, (0.2, 1.0, 0.2, 1.0),
                           'Action: %s' % self.game_state.current_action)
 
+  def RenderNodes(self):
+    GL.glBegin(GL.GL_QUADS)
+    for n in self.game_state.nodes:
+      x, y = n.pos.x, n.pos.y
+      GL.glColor(1, 0, 0, 1)
+      GL.glVertex(3 * x, 3 * y)
+      GL.glVertex(3 * (x + 1), 3 * y)
+      GL.glVertex(3 * (x + 1), 3 * (y + 1))
+      GL.glVertex(3 * x, 3 * (y + 1))
+    GL.glEnd()
+
   def RenderWorld(self):
     # TODO: scroll(/zoom?) the map + other stuff tied to map
     GL.glPushMatrix(GL.GL_MODELVIEW)
-    GL.glTranslate(-0.8, -0.8, 0)
-    GL.glScale(0.03, 0.03, 1)
+    GL.glTranslate(-1.6, -1.0, 0)
+    GL.glScale(0.02, 0.02, 1)
 
     self.world_render.Draw()
-    # TODO: Draw nodes.
+    self.RenderNodes()
     # TODO: Draw units + unit effects.
 
     GL.glPopMatrix(GL.GL_MODELVIEW)

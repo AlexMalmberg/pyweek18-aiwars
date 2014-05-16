@@ -47,7 +47,10 @@ def main():
   gs = game.GameState(w)
 
   if 1:
-    nc = n_city.City(vec.Vec(1, 1), 1e6)
+    #for i in xrange(100):
+    #  nc = n_city.City(vec.Vec(i * 47 % w.width, i * 9486 % w.height), 1e6)
+    #  gs.AddNode(nc)
+    nc = n_city.City(vec.Vec(15, 15), 1e6)
     gs.AddNode(nc)
 
     n1 = n_datacenter.Datacenter(vec.Vec(5, 5), 1, 2.4e6)
