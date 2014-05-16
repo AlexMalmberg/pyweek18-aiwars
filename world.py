@@ -12,3 +12,18 @@ class World(object):
     self.width = width
     self.height = height
     self.map = (ctypes.c_byte * height * width)()
+
+
+def LoadWorld(filename):
+  with open(filename, 'rt') as f:
+    hdr = f.readline()
+    width, height = map(int, hdr.split())
+    w = World(width, height)
+    for y in xrange(height):
+      l = f.readline()
+      for x in xrange(width):
+        if l[x] == '1':
+          w.map[x][height - 1 - y] = Land
+        else:
+          w.map[x][height - 1 - y] = Water
+  return w
