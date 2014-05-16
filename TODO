@@ -40,8 +40,11 @@
 
 - phase 2b
 
-T map
-T basic map rendering
+* map
+* basic map rendering
+
+T main game loop
+
 T basic HUD
 T basic UI actions on nodes
 
