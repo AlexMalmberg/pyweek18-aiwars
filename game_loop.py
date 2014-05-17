@@ -50,7 +50,8 @@ class GameLoop(object):
     self.turn_rate = 500.
     self.quit = False
 
-    self.world_translate = [-1.6, -1.0]
+    self.world_translate = [-self.world.width * 3. / 2.,
+                            -self.world.height * 3. / 2.]
     self.world_scale = 0.02
 
   def RenderHud(self):
@@ -101,10 +102,9 @@ class GameLoop(object):
     GL.glEnd()
 
   def RenderWorld(self):
-    # TODO: scroll(/zoom?) the map + other stuff tied to map
     GL.glPushMatrix(GL.GL_MODELVIEW)
-    GL.glTranslate(self.world_translate[0], self.world_translate[1], 0)
     GL.glScale(self.world_scale, self.world_scale, 1)
+    GL.glTranslate(self.world_translate[0], self.world_translate[1], 0)
 
     self.world_render.Draw()
     self.RenderNodes()
@@ -122,16 +122,16 @@ class GameLoop(object):
     if self.dialog:
       self.dialog.Render()
 
-    self.text.DrawString(-1.6, -1.0, 0.05, (1, 1, 1, 1), str(clock))
-    self.text.DrawString(-1.6, -0.95, 0.05, (1, 1, 1, 1),
+    self.text.DrawString(-1.6, 0.95, 0.05, (1, 1, 1, 1), str(clock))
+    self.text.DrawString(-1.6, 0.90, 0.05, (1, 1, 1, 1),
                           '%i %5.3f' % (self.animation_time, self.turn_time))
     pygame.display.flip()
 
   def ScreenToWorld(self, x, y):
     x, y = self.render.ScreenToViewport(x, y)
-    x = (x - self.world_translate[0]) / self.world_scale / 3.
-    y = (y - self.world_translate[1]) / self.world_scale / 3.
-    return x, y
+    x = x / self.world_scale - self.world_translate[0]
+    y = y / self.world_scale - self.world_translate[1]
+    return x / 3., y / 3.
 
   def NodeAt(self, x, y):
     for n in self.game_state.nodes:
@@ -174,20 +174,18 @@ class GameLoop(object):
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
-      self.world_translate[1] -= dt / 1000.
+      self.world_translate[1] -= dt / 1000. * 30.
     if keys[pygame.K_DOWN]:
-      self.world_translate[1] += dt / 1000.
+      self.world_translate[1] += dt / 1000. * 30.
     if keys[pygame.K_LEFT]:
-      self.world_translate[0] += dt / 1000.
+      self.world_translate[0] += dt / 1000. * 30.
     if keys[pygame.K_RIGHT]:
-      self.world_translate[0] -= dt / 1000.
+      self.world_translate[0] -= dt / 1000. * 30.
 
-    # TODO: only for debugging, disable? if not, need to fix
-    # scale/translate order
     if keys[pygame.K_KP_PLUS]:
-      self.world_scale *= math.exp(dt / 1000. * math.log(1.3))
+      self.world_scale *= math.exp(dt / 1000. * math.log(1.6))
     if keys[pygame.K_KP_MINUS]:
-      self.world_scale /= math.exp(dt / 1000. * math.log(1.3))
+      self.world_scale /= math.exp(dt / 1000. * math.log(1.6))
 
   def Play(self):
     clock = pygame.time.Clock()
