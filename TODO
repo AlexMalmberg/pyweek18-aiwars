@@ -62,12 +62,9 @@ T research
 T create botnet
 T create app
 
-T crack: factory, mine, data center, military base
+T crack: factory, data center, military base
 
 T data center
- T adjust level of steal
-
-T mine
  T adjust level of steal
 
 T factory
@@ -115,3 +112,8 @@ T graphics
  - killer robots build new nodes and can take over nodes
 - ending, peacefully
  - nanotech-upgrade certain fraction of world population
+
+
+- scrapped
+ - raw materials
+ - mines
