@@ -60,12 +60,16 @@ class Text(object):
 
     return self._texture_cache[key]
 
-  def DrawString(self, x, y, size, color, msg):
+  def DrawString(self, x, y, size, color, msg, center=False):
     msg = str(msg)
     font_size = self.render.ScreenToPixels(size)
     t = self._GetTexture(font_size, msg)
     w = self.render.PixelsToScreen(t.width)
     h = self.render.PixelsToScreen(t.height)
+
+    if center:
+      x -= w / 2.
+
     glColor(*color)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glBindTexture(GL_TEXTURE_2D, t.texture)
