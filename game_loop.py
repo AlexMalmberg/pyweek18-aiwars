@@ -4,6 +4,7 @@ from OpenGL import GL
 
 import a_crack
 import action
+import dialog
 import misc
 import render_state
 import text
@@ -46,7 +47,7 @@ class GameLoop(object):
     self.dialog = None
     self.animation_time = 0
     self.turn_time = 0
-    self.turn_rate = 100.
+    self.turn_rate = 500.
     self.quit = False
 
     self.world_translate = [-1.6, -1.0]
@@ -71,7 +72,8 @@ class GameLoop(object):
         self.text.DrawString(
           -1.55, 0.30, 0.05, (0.2, 1.0, 0.2, 1.0),
            '(%i turns left)'
-           % ((self.game_state.action_cost - self.game_state.action_progress) / flops))
+           % ((self.game_state.action_cost - self.game_state.action_progress)
+              / flops))
 
   def RenderNodes(self):
     GL.glBegin(GL.GL_QUADS)
@@ -123,6 +125,62 @@ class GameLoop(object):
         return n
     return None
 
+  def OpenDialogFor(self, n):
+    d = dialog.Dialog(self.render, self.text, self)
+    d.SetSize(0.6, 0.4)
+    d.Center()
+    d.AddElement(dialog.Text(0.3, 0.38, 0.04, (0, 0, 0, 1), True, 'Dialog'))
+    d.AddElement(dialog.Button(
+        0.1, 0.1, 0.4, 0.2, 0.1, self.CloseDialog, 'Crack!'))
+    d.Ready()
+    self.dialog = d
+
+  def CloseDialog(self):
+    self.dialog = None
+
+  def HandleEvents(self, dt):
+    for e in pygame.event.get():
+      if e.type == pygame.QUIT:
+        self.quit = True
+        continue
+
+      if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+        self.quit = True
+        continue
+
+      if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+        x, y = self.ScreenToWorld(*e.pos)
+        print 'click at %5.2f %5.2f' % (x, y)
+
+        fx, fy = int(math.floor(x)), int(math.floor(y))
+        n = self.NodeAt(fx, fy)
+        if n is not None:
+          self.OpenDialogFor(n)
+          #try:
+          #  a = a_crack.Crack(self.game_state, n)
+          #  self.game_state.SetCurrentAction(a)
+          #except action.ImpossibleAction:
+          #  # TODO: insert sound effect here
+          #  pass
+        continue
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+      self.world_translate[1] -= dt / 1000.
+    if keys[pygame.K_DOWN]:
+      self.world_translate[1] += dt / 1000.
+    if keys[pygame.K_LEFT]:
+      self.world_translate[0] += dt / 1000.
+    if keys[pygame.K_RIGHT]:
+      self.world_translate[0] -= dt / 1000.
+
+    # TODO: only for debugging, disable? if not, need to fix
+    # scale/translate order
+    if keys[pygame.K_KP_PLUS]:
+      self.world_scale *= math.exp(dt / 1000. * math.log(1.3))
+    if keys[pygame.K_KP_MINUS]:
+      self.world_scale /= math.exp(dt / 1000. * math.log(1.3))
+
   def Play(self):
     clock = pygame.time.Clock()
 
@@ -133,49 +191,16 @@ class GameLoop(object):
       dt = clock.tick()
 
       self.animation_time += dt
-      self.turn_time += dt / self.turn_rate
-      while self.turn_time > 1:
-        self.game_state.AdvanceTurn()
-        self.turn_time -= 1
+
+      if not self.dialog:
+        self.turn_time += dt / self.turn_rate
+        while self.turn_time > 1:
+          self.game_state.AdvanceTurn()
+          self.turn_time -= 1
 
       self.Render(clock)
 
-      for e in pygame.event.get():
-        if (e.type == pygame.QUIT
-            or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE)):
-          self.quit = True
-          continue
-
-        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-          x, y = self.ScreenToWorld(*e.pos)
-          print 'click at %5.2f %5.2f' % (x, y)
-
-          fx, fy = int(math.floor(x)), int(math.floor(y))
-          n = self.NodeAt(fx, fy)
-          if n is not None:
-            try:
-              a = a_crack.Crack(self.game_state, n)
-              self.game_state.SetCurrentAction(a)
-            except action.ImpossibleAction:
-              # TODO: insert sound effect here
-              pass
-          continue
-
-        print e
-
-      keys = pygame.key.get_pressed()
-      if keys[pygame.K_UP]:
-        self.world_translate[1] -= dt / 1000.
-      if keys[pygame.K_DOWN]:
-        self.world_translate[1] += dt / 1000.
-      if keys[pygame.K_LEFT]:
-        self.world_translate[0] += dt / 1000.
-      if keys[pygame.K_RIGHT]:
-        self.world_translate[0] -= dt / 1000.
-
-      # TODO: only for debugging, disable? if not, need to fix
-      # scale/translate order
-      if keys[pygame.K_KP_PLUS]:
-        self.world_scale *= math.exp(dt / 1000. * math.log(1.3))
-      if keys[pygame.K_KP_MINUS]:
-        self.world_scale /= math.exp(dt / 1000. * math.log(1.3))
+      if self.dialog:
+        self.dialog.HandleEvents(dt)
+      else:
+        self.HandleEvents(dt)

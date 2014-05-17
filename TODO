@@ -46,15 +46,20 @@
 * main game loop
 
 * basic HUD
-T basic UI actions on nodes
+* basic UI actions on nodes
 
 
 - phase 2c
 
-T time management
+* dialogs
 
 
 - phase 2d
+
+T time management
+
+
+- phase 2e
 
 T units
 T unit movement
