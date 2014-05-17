@@ -72,6 +72,44 @@ class Button(DialogElement):
       self.callback()
 
 
+class Icon(DialogElement):
+  Border = 0.01
+
+  def __init__(self, x, y, width, height, callback, icon):
+    self.x = x
+    self.y = y
+    self.width = width
+    self.height = height
+    self.callback = callback
+    print '%i'
+    self.icon = icon
+    self.active_region = (x, y, x + width, y + height)
+    self.highlight = False
+
+  def SetHighlight(self, highlight):
+    self.highlight = highlight
+
+  def Render(self, render, text, active):
+    print '%i, %i, %r' % (self.icon, active, self.highlight)
+    if active == 2 or self.highlight:
+      ca = (0.4, 0.6, 1.0, 1)
+      cb = (0.4, 0.6, 1.0, 1)
+    elif active == 1:
+      ca = (0.15, 0.22, 0.78, 1)
+      cb = (0.15, 0.22, 0.78, 1)
+    else:
+      ca = render_state.Black
+      cb = render_state.GreenWireframe
+    render.DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
+    render.DrawIcon(self.x + self.Border, self.y + self.Border,
+                    self.width - self.Border * 2,
+                    self.height - self.Border * 2,
+                    self.icon)
+
+  def Clicked(self, x, y):
+    self.callback()
+
+
 class Dialog(object):
   Border = 0.01
 
@@ -160,6 +198,15 @@ class Dialog(object):
         self.Close()
         continue
 
+      if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+        x, y = self.render.ScreenToViewport(*e.pos)
+        x, y = self.ViewportToDialog(x, y)
+        self.active_element = self.ElementAt(x, y)
+        if self.active_element:
+          self.active_element.Clicked(x, y)
+        self.button_pressed = True
+        continue
+
       if e.type == pygame.MOUSEMOTION:
         x, y = self.render.ScreenToViewport(*e.pos)
         x, y = self.ViewportToDialog(x, y)
@@ -179,13 +226,4 @@ class Dialog(object):
         if self.active_element:
           self.active_element.Unclicked(x, y)
         self.active_element = self.ElementAt(x, y)
-        continue
-
-      if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-        x, y = self.render.ScreenToViewport(*e.pos)
-        x, y = self.ViewportToDialog(x, y)
-        self.active_element = self.ElementAt(x, y)
-        if self.active_element:
-          self.active_element.Clicked(x, y)
-        self.button_pressed = True
         continue

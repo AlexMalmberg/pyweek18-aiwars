@@ -3,6 +3,8 @@ import pygame
 import sys
 from OpenGL.GL import *
 
+import game
+
 
 F = ctypes.sizeof(ctypes.c_float)
 FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
@@ -44,9 +46,17 @@ class Render(object):
       files.append('oc%02i' % i)
 
     self.tile_col_textures = self.LoadTextureArray(
-      ['data/%s_col.png' % f for f in files])
-    #self.tile_line_textures = self.LoadTextureArray(
-    #  ['data/%s_line.png' % f for f in files])
+      ['data/tiles/%s_col.png' % f for f in files])
+    self.tile_line_textures = self.LoadTextureArray(
+      ['data/tiles/%s_line.png' % f for f in files])
+
+    # Icons.
+    files = list(game.Research.IconNames)
+    self.tech_icon = list(range(game.Research.Num))
+    self.icon_col_textures = self.LoadTextureArray(
+      ['data/icon_%s_col.png' % f for f in files])
+    self.icon_line_textures = self.LoadTextureArray(
+      ['data/icon_%s_line.png' % f for f in files])
 
     # Shaders.
     self.tile_shader = self.BuildShader('tile shader', """
@@ -75,8 +85,8 @@ void main(){
     self.height = height
 
     ofs_x = (screen_width - width) / 2
-    ofs_y = (screen_height - height) / 2
-    glViewport(ofs_x, ofs_y, width, height)
+    ofs_y = (screen_height - height) / 2.
+    glViewport(int(ofs_x), int(ofs_y), width, height)
     glMatrixMode(GL_PROJECTION)
     glOrtho(-1.6, 1.6, -1.0, 1.0, -1.0, 1.0)
     glMatrixMode(GL_MODELVIEW)
@@ -195,3 +205,21 @@ void main(){
 
     self.DrawBox(x + border, y + border, w - border * 2, h - border * 2, border,
                  Black, GreenWireframe)
+
+  def DrawIcon(self, x, y, w, h, icon):
+    prg = self.tile_shader
+    glUseProgram(prg)
+    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_col_textures)
+    l = glGetUniformLocation(prg, b'texture_atlas')
+    glUniform1i(l, 0)
+    glBegin(GL_QUADS)
+    glTexCoord3f(0, 0, icon)
+    glVertex(x, y)
+    glTexCoord3f(1, 0, icon)
+    glVertex(x + w, y)
+    glTexCoord3f(1, 1, icon)
+    glVertex(x + w, y + h)
+    glTexCoord3f(0, 1, icon)
+    glVertex(x, y + h)
+    glEnd()
+    glUseProgram(0)

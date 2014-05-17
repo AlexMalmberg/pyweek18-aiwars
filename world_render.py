@@ -214,7 +214,7 @@ class WorldRenderer(object):
   def Draw(self):
     glUseProgram(self.prg)
     glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
-    l = glGetUniformLocation(self.prg, 'texture_atlas')
+    l = glGetUniformLocation(self.prg, b'texture_atlas')
     glUniform1i(l, 0)
     glBindBuffer(GL_ARRAY_BUFFER, self.vbo_vert)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.vbo_index)

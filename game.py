@@ -15,6 +15,7 @@ class Research(object):
   MaxLevel = 7
 
   Names = ['Cracking', 'Psychology', 'Crypto', 'Robotics', 'Nanotech']
+  IconNames = ['cracking', 'psych', 'crypto', 'robo', 'nano']
 
 
 class GameState(object):
@@ -77,28 +78,28 @@ class GameState(object):
     self.raw_material += int(amount)
 
   def Print(self):
-    print '== GameState %r' % self
-    print 'Turn %i' % self.turn
-    print 'Raw material: %i' % self.raw_material
+    print('== GameState %r' % self)
+    print('Turn %i' % self.turn)
+    print('Raw material: %i' % self.raw_material)
     flops = self.Flops()
-    print 'Current flops: %s' % misc.FormatFlops(flops)
+    print('Current flops: %s' % misc.FormatFlops(flops))
     if self.current_action:
-      print '= Action: %r' % self.current_action
-      print 'Progress: %s / %s' % (misc.FormatFlops(self.action_progress),
-                                   misc.FormatFlops(self.action_cost))
+      print('= Action: %r' % self.current_action)
+      print('Progress: %s / %s' % (misc.FormatFlops(self.action_progress),
+                                   misc.FormatFlops(self.action_cost)))
       if flops:
-        print ('(%i turns left)'
-               % ((self.action_cost - self.action_progress) / flops))
-    print '= Research:'
+        print(('(%i turns left)'
+               % ((self.action_cost - self.action_progress) / flops)))
+    print('= Research:')
     for i in xrange(Research.Num):
-      print '%10s: %i' % (Research.Names[i], self.research_level[i])
-    print '= Humans:'
+      print('%10s: %i' % (Research.Names[i], self.research_level[i]))
+    print('= Humans:')
     for i in xrange(Research.Num):
-      print '%10s: %i' % (Research.Names[i], self.human_level[i])
-    print 'Paranoia level: %i' % self.human_paranoia_level
-    print '= Nodes:'
+      print('%10s: %i' % (Research.Names[i], self.human_level[i]))
+    print('Paranoia level: %i' % self.human_paranoia_level)
+    print('= Nodes:')
     for n in self.nodes:
-      print '%r' % n
-    print '= Globals:'
+      print('%r' % n)
+    print('= Globals:')
     for n in self.glbls:
-      print '%r' % n
+      print('%r' % n)

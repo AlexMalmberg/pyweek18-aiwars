@@ -8,6 +8,7 @@ import dialog
 import game
 import misc
 import render_state
+import research
 import text
 import world
 import world_render
@@ -54,25 +55,37 @@ class GameLoop(object):
     self.world_translate = [-self.world.width * 3. / 2.,
                             -self.world.height * 3. / 2.]
     self.world_scale = 0.02
+
+    self.button_pressed = False
+    self.active_element = None
+    self.active_node = None
+    self.active_unit = None
+
     self.PrepareHud()
 
   def PrepareHud(self):
-    self.research_button = dialog.Button(-1.55, -0.95, 0.4, 0.1, 0.05, None,
-                                          'Research')
+    self.research_button = dialog.Button(
+      -1.55, -0.95, 0.4, 0.1, 0.05,
+       self.OpenResearchDialog, 'Research')
+    self.elements = [self.research_button]
 
   def RenderHud(self):
-    #if self.hud_list_ready:
-    #  GL.glCallList(self.hud_list)
-    #  return
-
-    #GL.glNewList(self.hud_list, GL.GL_COMPILE_AND_EXECUTE)
     # Center: Turn/date, flops, resources, current action
     self.RenderHudCenter()
 
     # Left: Techs + research button
     self.RenderHudTech()
-    #GL.glEndList()
-    #self.hud_list_ready = True
+
+    for e in self.elements:
+      if e == self.active_element:
+        if self.button_pressed:
+          a = 2
+        else:
+          a = 1
+      else:
+        a = 0
+      e.Render(self.render, self.text, a)
+
 
   def RenderHudTech(self):
     w = 0.5
@@ -91,8 +104,6 @@ class GameLoop(object):
       self.text.DrawString(l + 0.18, t - 0.1 - 0.05 * i, 0.05,
                            render_state.Black,
                            game.Research.Names[i])
-
-    self.research_button.Render(self.render, self.text, 0)
 
   def RenderHudCenter(self):
     flops = self.game_state.Flops()
@@ -181,6 +192,12 @@ class GameLoop(object):
         return n
     return None
 
+  def UnitAt(self, x, y):
+    return None
+
+  def OpenResearchDialog(self):
+    self.dialog = research.ResearchDialog(self.render, self.text, self)
+
   def OpenDialogFor(self, n):
     d = dialog.Dialog(self.render, self.text, self)
     d.SetSize(0.6, 0.4)
@@ -194,6 +211,15 @@ class GameLoop(object):
   def CloseDialog(self):
     self.dialog = None
 
+  def ElementAt(self, x, y):
+    for e in self.elements:
+      ar = e.active_region
+      if not ar:
+        continue
+      if misc.Inside(x, y, ar):
+        return e
+    return None
+
   def HandleEvents(self, dt):
     for e in pygame.event.get():
       if e.type == pygame.QUIT:
@@ -205,15 +231,70 @@ class GameLoop(object):
         continue
 
       if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-        x, y = self.ScreenToWorld(*e.pos)
-        print 'click at %5.2f %5.2f' % (x, y)
+        x, y = self.render.ScreenToViewport(*e.pos)
+        wx, wy = self.ScreenToWorld(*e.pos)
+        fx, fy = int(math.floor(wx)), int(math.floor(wy))
 
-        fx, fy = int(math.floor(x)), int(math.floor(y))
+        # First check UI elements.
+        self.active_node = self.active_unit = None
+        self.active_element = self.ElementAt(x, y)
+        if self.active_element:
+          self.active_element.Clicked(x, y)
+          self.button_pressed = True
+          continue
+
+        # TODO: check units
+        u = self.UnitAt(fx, fy)
+        if u:
+          self.active_unit = u
+          self.button_pressed = True
+          continue
+
+        # Finally nodes.
         n = self.NodeAt(fx, fy)
         if n is not None:
           self.OpenDialogFor(n)
         continue
 
+      if e.type == pygame.MOUSEMOTION:
+        x, y = self.render.ScreenToViewport(*e.pos)
+        wx, wy = self.ScreenToWorld(*e.pos)
+        fx, fy = int(math.floor(wx)), int(math.floor(wy))
+        if self.button_pressed:
+          if self.active_element:
+            self.active_element.Dragged(x, y)
+          elif self.active_node:
+            # Dragging nodes does nothing, and we shouldn't end up
+            # here, anyway.
+            pass
+          elif self.active_unit:
+            pass  # TODO: update in-flight order with arrow
+        else:
+          # For highlighting mouse-over'd stuff.
+          self.active_node = self.active_unit = None
+          self.active_element = self.ElementAt(x, y)
+          if not self.active_element:
+            self.active_node = self.NodeAt(fx, fy)
+            if not self.active_node:
+              self.active_unit = self.UnitAt(fx, fy)
+        continue
+
+      if e.type == pygame.MOUSEBUTTONUP and e.button == 1:
+        x, y = self.render.ScreenToViewport(*e.pos)
+        wx, wy = self.ScreenToWorld(*e.pos)
+        fx, fy = int(math.floor(wx)), int(math.floor(wy))
+
+        self.button_pressed = False
+        if self.active_element:
+          self.active_element.Unclicked(x, y)
+        elif self.active_node:
+          # Nodes do nothing when dragged.
+          pass
+        elif self.active_unit:
+          pass  # TODO: issue order
+        continue
+
+    # Next, check for scroll keys.
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
       self.world_translate[1] -= dt / 1000. * 30.
@@ -234,9 +315,6 @@ class GameLoop(object):
 
     GL.glEnable(GL.GL_BLEND)
 
-    #self.hud_list = GL.glGenLists(1)
-    #self.hud_list_ready = False
-
     i = 0
     while not self.quit:
       dt = clock.tick()
@@ -247,7 +325,6 @@ class GameLoop(object):
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
-          #self.hud_list_ready = False
           self.turn_time -= 1
 
       self.Render(clock)
@@ -256,5 +333,3 @@ class GameLoop(object):
         self.dialog.HandleEvents(dt)
       else:
         self.HandleEvents(dt)
-
-    #GL.glDeleteLists(self.hud_list, 1)
