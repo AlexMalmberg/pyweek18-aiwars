@@ -5,6 +5,7 @@ from OpenGL import GL
 import a_crack
 import action
 import dialog
+import game
 import misc
 import render_state
 import text
@@ -47,50 +48,89 @@ class GameLoop(object):
     self.dialog = None
     self.animation_time = 0
     self.turn_time = 0
-    self.turn_rate = 500.
+    self.turn_rate = 200.
     self.quit = False
 
     self.world_translate = [-self.world.width * 3. / 2.,
                             -self.world.height * 3. / 2.]
     self.world_scale = 0.02
+    self.PrepareHud()
+
+  def PrepareHud(self):
+    self.research_button = dialog.Button(-1.55, -0.95, 0.4, 0.1, 0.05, None,
+                                          'Research')
 
   def RenderHud(self):
-    #
-    # Need to display:
-    #
-    # Flops
-    # Progress on current action
-    # Raw materials
-    # Date
-    #
-    # Active botnets
-    # Active apps
-    #
+    if self.hud_list_ready:
+      GL.glCallList(self.hud_list)
+      return
 
+    GL.glNewList(self.hud_list, GL.GL_COMPILE_AND_EXECUTE)
+    # Center: Turn/date, flops, resources, current action
+    self.RenderHudCenter()
+
+    # Left: Techs + research button
+    self.RenderHudTech()
+    GL.glEndList()
+    self.hud_list_ready = True
+
+  def RenderHudTech(self):
+    w = 0.5
+    h = 0.5
+    l = -1.6
+    r = l + w
+    b = -1.0
+    t = b + h
+
+    self.render.DrawSolidBoxWithBorder(l, b, w, h, 0.01)
+
+    for i in xrange(game.Research.Num):
+      self.text.DrawString(l + 0.05, t - 0.1 - 0.05 * i, 0.05,
+                           render_state.Black,
+                           '%i bit' % (self.game_state.research_level[i] + 1))
+      self.text.DrawString(l + 0.18, t - 0.1 - 0.05 * i, 0.05,
+                           render_state.Black,
+                           game.Research.Names[i])
+
+    self.research_button.Render(self.render, self.text, 0)
+
+  def RenderHudCenter(self):
     flops = self.game_state.Flops()
     raw_material = self.game_state.raw_material
 
-    self.render.DrawSolidBoxWithBorder(-1.6, -1.0, 0.8, 0.4, 0.01)
+    w = 1.0
+    h = 0.35
+    l = -w / 2
+    r = l + w
+    b = -1.0
+    t = b + h
 
-    self.text.DrawString(-1.55, 0.5, 0.05, (0.2, 1.0, 0.2, 1.0),
-                          misc.FormatFlops(flops))
-    self.text.DrawString(-1.55, 0.45, 0.05, (0.2, 1.0, 0.2, 1.0),
-                          'Turn: %i' % self.game_state.turn)
-    self.text.DrawString(-1.55, 0.40, 0.05, (0.2, 1.0, 0.2, 1.0),
-                          'Action: %s' % self.game_state.current_action)
+    self.render.DrawSolidBoxWithBorder(l, b, w, h, 0.01)
+
+    # TODO: slowly morph this towards unix epoch timestamp
+    self.text.DrawString(l + 0.05, t - 0.1, 0.05, render_state.Black,
+                         misc.TurnToDate(self.game_state.turn))
+
+    self.text.DrawString(r - 0.05, t - 0.1, 0.05, render_state.Black,
+                          misc.FormatFlops(flops),
+                          right=True)
+
+    self.text.DrawString(r - 0.05, t - 0.15, 0.05, render_state.Black,
+                          '%i tons of metal' % raw_material,
+                          right=True)
+
     if self.game_state.current_action:
-      a = self.game_state.current_action
-      self.text.DrawString(
-        -1.55, 0.35, 0.05, (0.2, 1.0, 0.2, 1.0),
-         'Progress: %s / %s'
-         % (misc.FormatFlops(self.game_state.action_progress),
-            misc.FormatFlops(self.game_state.action_cost)))
-      if flops:
-        self.text.DrawString(
-          -1.55, 0.30, 0.05, (0.2, 1.0, 0.2, 1.0),
-           '(%i turns left)'
-           % ((self.game_state.action_cost - self.game_state.action_progress)
-              / flops))
+      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, render_state.Black,
+                           '%s' % self.game_state.current_action,
+                           center=True)
+      progress = (self.game_state.action_progress
+                  / float(self.game_state.action_cost) * 100.)
+      self.text.DrawString((l + r) / 2, t - 0.30, 0.05, render_state.Black,
+                           '%.2f%%' % progress,
+                           center=True)
+    else:
+      self.text.DrawString((l + r) / 2, t - 0.30, 0.05, render_state.Black,
+                          'Idle', center=True)
 
   def RenderNodes(self):
     GL.glBegin(GL.GL_QUADS)
@@ -194,6 +234,9 @@ class GameLoop(object):
 
     GL.glEnable(GL.GL_BLEND)
 
+    self.hud_list = GL.glGenLists(1)
+    self.hud_list_ready = False
+
     i = 0
     while not self.quit:
       dt = clock.tick()
@@ -204,6 +247,7 @@ class GameLoop(object):
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
+          self.hud_list_ready = False
           self.turn_time -= 1
 
       self.Render(clock)
@@ -212,3 +256,5 @@ class GameLoop(object):
         self.dialog.HandleEvents(dt)
       else:
         self.HandleEvents(dt)
+
+    GL.glDeleteLists(self.hud_list, 1)
