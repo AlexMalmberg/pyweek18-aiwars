@@ -101,7 +101,7 @@ class GameLoop(object):
 
   def RenderHudGlobals(self):
     w = 0.5
-    h = 0.2 + len(self.game_state.glbls) * 0.05
+    h = 0.25 + len(self.game_state.glbls) * 0.05
     r = 1.6
     l = r - w
     b = -1.0
