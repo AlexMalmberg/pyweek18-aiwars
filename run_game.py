@@ -13,7 +13,6 @@ import render_state
 import text
 import world
 
-import a_research
 import n_city
 import n_datacenter
 import n_factory
@@ -65,9 +64,6 @@ def main():
 
     n4 = n_factory.Factory(vec.Vec(8, 8), 0, 4)
     gs.AddNode(n4)
-
-    a = a_research.Research(gs, game.Research.Cracking)
-    gs.SetCurrentAction(a)
 
   gl = game_loop.GameLoop(render, t, gs)
   gl.Play()
