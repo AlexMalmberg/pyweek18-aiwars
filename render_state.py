@@ -223,3 +223,18 @@ void main(){
     glVertex(x, y + h)
     glEnd()
     glUseProgram(0)
+
+  def DrawProgressBar(self, x, y, w, h, progress):
+    glBegin(GL_QUADS)
+    xmid = x + w * progress
+    glColor(0.2, 0.7, 0.2, 1)
+    glVertex(x, y)
+    glVertex(x, y + h)
+    glVertex(xmid, y + h )
+    glVertex(xmid, y)
+    glColor(0, 0, 00, 1)
+    glVertex(xmid, y)
+    glVertex(xmid, y + h)
+    glVertex(x + w, y + h )
+    glVertex(x + w, y)
+    glEnd()

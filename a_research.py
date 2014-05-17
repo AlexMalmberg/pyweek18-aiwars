@@ -16,5 +16,8 @@ class Research(action.Action):
   def Execute(self):
     self.game_state.research_level[self.tech] += 1
 
+  def Description(self):
+    return 'Researching %s' % (game.Research.Names[self.tech])
+
   def __repr__(self):
     return '%s(%s)' % (self.__class__.__name__, game.Research.Names[self.tech])

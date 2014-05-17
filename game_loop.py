@@ -126,16 +126,19 @@ class GameLoop(object):
                           right=True)
 
     if self.game_state.current_action:
-      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, render_state.Black,
-                           '%s' % self.game_state.current_action,
+      self.text.DrawString((l + r) / 2, t - 0.19, 0.05, render_state.Black,
+                           self.game_state.current_action.Description(),
                            center=True)
       progress = (self.game_state.action_progress
-                  / float(self.game_state.action_cost) * 100.)
-      self.text.DrawString((l + r) / 2, t - 0.30, 0.05, render_state.Black,
-                           '%.2f%%' % progress,
-                           center=True)
+                  / float(self.game_state.action_cost))
+      self.render.DrawProgressBar(
+        (l + r) / 2 - w * 0.4,
+        b + 0.05,
+        w * 0.8,
+        0.1,
+        progress)
     else:
-      self.text.DrawString((l + r) / 2, t - 0.30, 0.05, render_state.Black,
+      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, render_state.Black,
                           'Idle', center=True)
 
   def RenderNodes(self):

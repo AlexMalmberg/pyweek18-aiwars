@@ -8,6 +8,9 @@ class Action(object):
   def __init__(self, game_state):
     self.game_state = game_state
 
+  def Description(self):
+    raise NotImplemented()
+
   def Cost(self):
     raise NotImplemented()
 
