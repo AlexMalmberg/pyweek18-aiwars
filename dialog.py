@@ -62,8 +62,8 @@ class Button(DialogElement):
       ca = (0.78, 0.22, 0.15, 1)
       cb = (0.78, 0.22, 0.15, 1)
     else:
-      ca = (0, 0, 0, 1)
-      cb = (0, 0.4, 0, 1)
+      ca = Black
+      cb = GreenWireframe
     render.DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
     text.DrawString(self.tx, self.ty, self.size, ca, self.msg, center=True)
 
@@ -108,6 +108,7 @@ class Dialog(object):
     if not self.ready:
       return
 
+    # Darken the rest of the screen.
     glColor(0, 0, 0, 0.4)
     glBegin(GL_QUADS)
     glVertex(-1.6, -1.0)
@@ -119,41 +120,8 @@ class Dialog(object):
     glPushMatrix(GL_MODELVIEW_MATRIX)
     glTranslate(self.x, self.y, 0)
 
-    # TODO: use solid-color raining numbers shader
-    glColor(1.0, 0.9, 0.8, 1.0)
-    glBegin(GL_QUADS)
-    glVertex(0, 0)
-    glVertex(self.width, 0)
-    glVertex(self.width, self.height)
-    glVertex(0, self.height)
-    glEnd()
-
-    # TODO: wireframe glowy-line shader
-    glColor(0, 0, 0, 1)
-    glBegin(GL_QUADS)
-
-    glVertex(self.Border, self.Border)
-    glVertex(self.Border * 2, self.Border)
-    glVertex(self.Border * 2, self.height - self.Border)
-    glVertex(self.Border, self.height - self.Border)
-
-    glVertex(self.width - self.Border, self.Border)
-    glVertex(self.width - self.Border * 2, self.Border)
-    glVertex(self.width - self.Border * 2, self.height - self.Border)
-    glVertex(self.width - self.Border, self.height - self.Border)
-
-
-    glVertex(self.Border, self.Border)
-    glVertex(self.Border * 2, self.Border * 2)
-    glVertex(self.width - self.Border, self.Border * 2)
-    glVertex(self.width - self.Border, self.Border)
-
-    glVertex(self.Border, self.height - self.Border)
-    glVertex(self.Border, self.height - self.Border * 2)
-    glVertex(self.width - self.Border, self.height - self.Border * 2)
-    glVertex(self.width - self.Border, self.height - self.Border)
-
-    glEnd()
+    self.render.DrawSolidBoxWithBorder(
+      0, 0, self.width, self.height, 0.01)
 
     for e in self.elements:
       if e == self.active_element:

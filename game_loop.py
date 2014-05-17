@@ -70,6 +70,8 @@ class GameLoop(object):
     flops = self.game_state.Flops()
     raw_material = self.game_state.raw_material
 
+    self.render.DrawSolidBoxWithBorder(-1.6, -1.0, 0.8, 0.4, 0.01)
+
     self.text.DrawString(-1.55, 0.5, 0.05, (0.2, 1.0, 0.2, 1.0),
                           misc.FormatFlops(flops))
     self.text.DrawString(-1.55, 0.45, 0.05, (0.2, 1.0, 0.2, 1.0),

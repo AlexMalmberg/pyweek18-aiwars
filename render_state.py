@@ -8,6 +8,11 @@ F = ctypes.sizeof(ctypes.c_float)
 FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
 
 
+Black = (0, 0, 0, 1)
+BoxBackground = (1.0, 0.9, 0.8, 1.0)
+GreenWireframe = (0, 0.4, 0, 1)
+
+
 def _MakeWidescreen(width, height):
   if width > int(1.6 * height):
     width = int(1.6 * height)
@@ -150,6 +155,7 @@ void main(){
     return program
 
   def DrawBox(self, x, y, w, h, border, ca, cb):
+    # TODO: wireframe glowy-line shader
     glColor(*ca)
     glNormal(*cb)
 
@@ -176,3 +182,16 @@ void main(){
     glVertex(x + w, y + h)
 
     glEnd()
+
+  def DrawSolidBoxWithBorder(self, x, y, w, h, border):
+    # TODO: use solid-color raining numbers shader
+    glColor(BoxBackground)
+    glBegin(GL_QUADS)
+    glVertex(x, y)
+    glVertex(x + w, y)
+    glVertex(x + w, y + h)
+    glVertex(x, y + h)
+    glEnd()
+
+    self.DrawBox(x + border, y + border, w - border * 2, h - border * 2, border,
+                 Black, GreenWireframe)
