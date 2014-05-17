@@ -21,7 +21,6 @@ import n_mine
 import vec
 
 
-
 def main():
   pygame.init()
 
@@ -32,7 +31,7 @@ def main():
     width, height = 0, 0
   else:
     flags = pygame.OPENGL | pygame.DOUBLEBUF | pygame.HWSURFACE
-    width, height = 1024, 640
+    width, height = 1280, 800
 
   pygame.display.set_caption('AI wars 2000 Deluxe Edition!')
   screen = pygame.display.set_mode((width, height), flags)
