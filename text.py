@@ -60,7 +60,7 @@ class Text(object):
 
     return self._texture_cache[key]
 
-  def DrawString(self, x, y, size, color, msg, center=False):
+  def DrawString(self, x, y, size, color, msg, center=False, right=False):
     msg = str(msg)
     font_size = self.render.ScreenToPixels(size)
     t = self._GetTexture(font_size, msg)
@@ -69,6 +69,8 @@ class Text(object):
 
     if center:
       x -= w / 2.
+    elif right:
+      x -= w
 
     glColor(*color)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
