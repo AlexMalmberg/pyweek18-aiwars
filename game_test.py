@@ -58,7 +58,6 @@ def main():
   n1.steal_fraction = 10
   gs.Print()
 
-
   a = a_crack.Crack(gs, n3)
   gs.SetCurrentAction(a)
   gs.Print()
