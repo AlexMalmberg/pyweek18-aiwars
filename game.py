@@ -17,6 +17,13 @@ class Research(object):
   Names = ['Cracking', 'Psychology', 'Crypto', 'Robotics', 'Nanotech']
   IconNames = ['cracking', 'psych', 'crypto', 'robo', 'nano']
 
+  FlavorTexts = [
+    'Makes it easier to take control of factories and data centers.',
+    'Allows you to incite riots and control the population.',
+    'Makes your actions harder for humans to discover.',
+    'Improves the fighting strength of your robot armies.',
+    'Increases computing capacity and human/computer interfaces.']
+
 
 class GameState(object):
   def __init__(self, world):
