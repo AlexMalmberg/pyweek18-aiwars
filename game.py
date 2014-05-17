@@ -19,10 +19,10 @@ class Research(object):
 
   FlavorTexts = [
     'Makes it easier to take control of factories and data centers.',
-    'Allows you to incite riots and control the population.',
+    'Allows you to incite riots and game social media to control humans.',
     'Makes your actions harder for humans to discover.',
-    'Improves the fighting strength of your robot armies.',
-    'Increases computing capacity and human/computer interfaces.']
+    'Increases the fighting strength of your robot armies.',
+    'Improves human/computer interfaces and computing capacity.']
 
 
 class GameState(object):
