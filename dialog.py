@@ -81,7 +81,6 @@ class Icon(DialogElement):
     self.width = width
     self.height = height
     self.callback = callback
-    print '%i'
     self.icon = icon
     self.active_region = (x, y, x + width, y + height)
     self.highlight = False
@@ -90,10 +89,9 @@ class Icon(DialogElement):
     self.highlight = highlight
 
   def Render(self, render, text, active):
-    print '%i, %i, %r' % (self.icon, active, self.highlight)
     if active == 2 or self.highlight:
-      ca = (0.4, 0.6, 1.0, 1)
-      cb = (0.4, 0.6, 1.0, 1)
+      ca = (0.6, 0.6, 1.0, 1)
+      cb = (0.6, 0.6, 1.0, 1)
     elif active == 1:
       ca = (0.15, 0.22, 0.78, 1)
       cb = (0.15, 0.22, 0.78, 1)
