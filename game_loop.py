@@ -54,7 +54,21 @@ class GameLoop(object):
     self.world_scale = 0.02
 
   def RenderHud(self):
+    #
+    # Need to display:
+    #
+    # Flops
+    # Progress on current action
+    # Raw materials
+    # Date
+    #
+    # Active botnets
+    # Active apps
+    #
+
     flops = self.game_state.Flops()
+    raw_material = self.game_state.raw_material
+
     self.text.DrawString(-1.55, 0.5, 0.05, (0.2, 1.0, 0.2, 1.0),
                           misc.FormatFlops(flops))
     self.text.DrawString(-1.55, 0.45, 0.05, (0.2, 1.0, 0.2, 1.0),
@@ -156,12 +170,6 @@ class GameLoop(object):
         n = self.NodeAt(fx, fy)
         if n is not None:
           self.OpenDialogFor(n)
-          #try:
-          #  a = a_crack.Crack(self.game_state, n)
-          #  self.game_state.SetCurrentAction(a)
-          #except action.ImpossibleAction:
-          #  # TODO: insert sound effect here
-          #  pass
         continue
 
     keys = pygame.key.get_pressed()

@@ -62,3 +62,7 @@ def StealDiscoverProb(my_crypto, their_crypto, steal_fraction):
   if prob > 1:
     return 1
   return prob
+
+
+def Inside(x, y, box):
+  return x >= box[0] and y >= box[1] and x <= box[2] and y <= box[3]

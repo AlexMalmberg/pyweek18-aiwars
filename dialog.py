@@ -1,40 +1,8 @@
 import pygame
 from OpenGL.GL import *
 
+import misc
 import render_state
-
-
-def DrawBox(x, y, w, h, border, ca, cb):
-  glColor(*ca)
-  #glNormal(*cb)
-
-  glBegin(GL_QUADS)
-
-  glVertex(x, y)
-  glVertex(x + border, y)
-  glVertex(x + border, y + h - border)
-  glVertex(x, y + h - border)
-
-  glVertex(x + w, y)
-  glVertex(x + w - border, y)
-  glVertex(x + w - border, y + h - border)
-  glVertex(x + w, y + h - border)
-
-  glVertex(x, y)
-  glVertex(x, y + border)
-  glVertex(x + w, y + border)
-  glVertex(x + w, y)
-
-  glVertex(x, y + h)
-  glVertex(x, y + h - border)
-  glVertex(x + w, y + h - border)
-  glVertex(x + w, y + h)
-
-  glEnd()
-
-
-def Inside(x, y, box):
-  return x >= box[0] and y >= box[1] and x <= box[2] and y <= box[3]
 
 
 class DialogElement(object):
@@ -96,11 +64,11 @@ class Button(DialogElement):
     else:
       ca = (0, 0, 0, 1)
       cb = (0, 0.4, 0, 1)
-    DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
+    render.DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
     text.DrawString(self.tx, self.ty, self.size, ca, self.msg, center=True)
 
   def Unclicked(self, x, y):
-    if Inside(x, y, self.active_region):
+    if misc.Inside(x, y, self.active_region):
       self.callback()
 
 
@@ -210,7 +178,7 @@ class Dialog(object):
       ar = e.active_region
       if not ar:
         continue
-      if Inside(x, y, ar):
+      if misc.Inside(x, y, ar):
         return e
     return None
 

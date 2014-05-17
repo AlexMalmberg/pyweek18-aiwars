@@ -56,60 +56,62 @@
 
 - phase 2d
 
-T time management
+T better hud
+
+T research
+T create botnet
+T create app
+
+T crack: factory, mine, data center, military base
+
+T data center
+ T adjust level of steal
+
+T mine
+ T adjust level of steal
+
+T factory
+ T start/stop building, adjust level of steal
+
+T city
+ T incite riot
+ T increase tech level
 
 
-- phase 2e
+- phase 3
 
 T units
 T unit movement
 T unit fighting
 T building units
 
-
-- phase 2e
-
 T incite riot
 T spontaneous riot
-
-
-- phase 2f
 
 T military base
 T fake order
 T control unit
 
 
-- phase 3
+- phase 4
 
-T it security company
+T security companies trying to track you down
 T country diplomacy/wars
+T victory conditions
+T music
+T sound effects
+
+T maybe: time management
+
+
+- phase 5
+
+T graphics
 
 
 - stuff that still need to be fleshed out
 
-T ending that doesn't rely on humans
- T fully automate stuff needed to build/run data centers
- T worker bots to replace humans
-T ending with enslaving humans
- T force humans to run the stuff needed for data centers
- T need mechanics to make this tricky, forcibly keep population in check
-T ending, peacefully
- T psychology, convince people to go along with this, make better
-   future for humans. how to distinguish between this and enslaving
-   them?
-T graphics
-T music
-T sound effects
-T military conflict
- T fighting units
- T military bases, police
- T building kille robots
- T requires factories for making units
-T security companies trying to track you down
-T companies (or maybe ditch the hierachy?)
-T node infiltration
-T building your own nodes
-T attitudes?
-T winning conditions
-T dynamically adjust turn rate
+- ending that doesn't rely on humans
+ - killer robots build new nodes and can take over nodes
+- ending, peacefully
+ - nanotech-upgrade certain fraction of world population

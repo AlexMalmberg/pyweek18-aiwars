@@ -18,45 +18,16 @@ class WorldRenderer(object):
     self.vbo_index = None
     self.vbo_vert = None
 
-    files = []
-    self.z_land = len(files)
-    files.append('data/tile_land.png')
-    self.z_water = len(files)
-    files.append('data/tile_water.png')
-
-    self.z_line = len(files)
-    self.z_line_num = 32
-    for i in xrange(self.z_line_num):
-      files.append('data/line%02i_col.png' % i)
-    self.z_ic = len(files)
-    self.z_ic_num = 16
-    for i in xrange(self.z_ic_num):
-      files.append('data/ic%02i_col.png' % i)
-    self.z_oc = len(files)
-    self.z_oc_num = 16
-    for i in xrange(self.z_oc_num):
-      files.append('data/oc%02i_col.png' % i)
-
-    self.texture = render.LoadTextureArray(files)
-
-    self.prg = render.BuildShader("""
-#version 120
-
-void main() {
-  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-  gl_TexCoord[0].xyz = gl_MultiTexCoord0.xyz;
-}
-
-""", """
-#version 130
-
-uniform sampler2DArray texture_atlas;
-
-void main(){
-  gl_FragColor = texture(texture_atlas, gl_TexCoord[0].xyz);
-}
-""")
-
+    self.texture = render.tile_col_textures
+    self.z_land = render.z_land
+    self.z_water = render.z_water
+    self.z_line = render.z_line
+    self.z_line_num = render.z_line_num
+    self.z_ic = render.z_ic
+    self.z_ic_num = render.z_ic_num
+    self.z_oc = render.z_oc
+    self.z_oc_num = render.z_oc_num
+    self.prg = render.tile_shader
     self._PrepareRendering()
 
   def __del__(self):
