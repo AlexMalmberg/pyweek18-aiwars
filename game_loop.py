@@ -61,22 +61,22 @@ class GameLoop(object):
                                           'Research')
 
   def RenderHud(self):
-    if self.hud_list_ready:
-      GL.glCallList(self.hud_list)
-      return
+    #if self.hud_list_ready:
+    #  GL.glCallList(self.hud_list)
+    #  return
 
-    GL.glNewList(self.hud_list, GL.GL_COMPILE_AND_EXECUTE)
+    #GL.glNewList(self.hud_list, GL.GL_COMPILE_AND_EXECUTE)
     # Center: Turn/date, flops, resources, current action
     self.RenderHudCenter()
 
     # Left: Techs + research button
     self.RenderHudTech()
-    GL.glEndList()
-    self.hud_list_ready = True
+    #GL.glEndList()
+    #self.hud_list_ready = True
 
   def RenderHudTech(self):
     w = 0.5
-    h = 0.5
+    h = 0.475
     l = -1.6
     r = l + w
     b = -1.0
@@ -87,7 +87,7 @@ class GameLoop(object):
     for i in xrange(game.Research.Num):
       self.text.DrawString(l + 0.05, t - 0.1 - 0.05 * i, 0.05,
                            render_state.Black,
-                           '%i bit' % (self.game_state.research_level[i] + 1))
+                           '%i-bit' % (self.game_state.research_level[i] + 1))
       self.text.DrawString(l + 0.18, t - 0.1 - 0.05 * i, 0.05,
                            render_state.Black,
                            game.Research.Names[i])
@@ -234,8 +234,8 @@ class GameLoop(object):
 
     GL.glEnable(GL.GL_BLEND)
 
-    self.hud_list = GL.glGenLists(1)
-    self.hud_list_ready = False
+    #self.hud_list = GL.glGenLists(1)
+    #self.hud_list_ready = False
 
     i = 0
     while not self.quit:
@@ -247,7 +247,7 @@ class GameLoop(object):
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
-          self.hud_list_ready = False
+          #self.hud_list_ready = False
           self.turn_time -= 1
 
       self.Render(clock)
@@ -257,4 +257,4 @@ class GameLoop(object):
       else:
         self.HandleEvents(dt)
 
-    GL.glDeleteLists(self.hud_list, 1)
+    #GL.glDeleteLists(self.hud_list, 1)
