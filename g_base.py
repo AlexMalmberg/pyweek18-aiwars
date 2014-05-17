@@ -31,7 +31,6 @@ class Global(object):
     if self.immune_until < game_state.turn:
       day_prob = self.DiscoverProbability(game_state)
       hour_prob = misc.DayProbToHourProb(day_prob)
-      print day_prob, hour_prob
       if random.uniform(0, 1) < hour_prob:
         self.Discovered(game_state)
 
