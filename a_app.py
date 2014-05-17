@@ -15,3 +15,6 @@ class CreateApp(a_global.CreateGlobal):
 
   def Target(self):
     return g_app.App
+
+  def Description(self):
+    return 'Creating app'

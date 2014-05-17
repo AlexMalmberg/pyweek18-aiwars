@@ -15,3 +15,6 @@ class CreateBotnet(a_global.CreateGlobal):
 
   def Target(self):
     return g_botnet.Botnet
+
+  def Description(self):
+    return 'Creating botnet'
