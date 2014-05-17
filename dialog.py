@@ -62,8 +62,8 @@ class Button(DialogElement):
       ca = (0.78, 0.22, 0.15, 1)
       cb = (0.78, 0.22, 0.15, 1)
     else:
-      ca = Black
-      cb = GreenWireframe
+      ca = render_state.Black
+      cb = render_state.GreenWireframe
     render.DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
     text.DrawString(self.tx, self.ty, self.size, ca, self.msg, center=True)
 
