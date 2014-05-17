@@ -107,7 +107,6 @@ class GameLoop(object):
 
   def RenderHudCenter(self):
     flops = self.game_state.Flops()
-    raw_material = self.game_state.raw_material
 
     w = 1.0
     h = 0.35
@@ -124,10 +123,6 @@ class GameLoop(object):
 
     self.text.DrawString(r - 0.05, t - 0.1, 0.05, render_state.Black,
                           misc.FormatFlops(flops),
-                          right=True)
-
-    self.text.DrawString(r - 0.05, t - 0.15, 0.05, render_state.Black,
-                          '%i tons of metal' % raw_material,
                           right=True)
 
     if self.game_state.current_action:
