@@ -1,3 +1,4 @@
+import datetime
 import math
 
 
@@ -66,3 +67,12 @@ def StealDiscoverProb(my_crypto, their_crypto, steal_fraction):
 
 def Inside(x, y, box):
   return x >= box[0] and y >= box[1] and x <= box[2] and y <= box[3]
+
+
+# 2015-01-01
+StartingDate = 3600 * 24 * (365 * 45 + 11)
+
+def TurnToDate(turn):
+  d = datetime.datetime.utcfromtimestamp(StartingDate + turn * 3600)
+  return ('%i-%02i-%02i %02i:00'
+          % (d.year, d.month, d.day, d.hour))
