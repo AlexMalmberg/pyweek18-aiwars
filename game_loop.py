@@ -4,6 +4,7 @@ from OpenGL import GL
 
 import a_crack
 import action
+import create
 import dialog
 import game
 import misc
@@ -66,8 +67,17 @@ class GameLoop(object):
   def PrepareHud(self):
     self.research_button = dialog.Button(
       -1.55, -0.95, 0.4, 0.1, 0.05,
-       self.OpenResearchDialog, 'Research')
-    self.elements = [self.research_button]
+      self.OpenResearchDialog, 'Research')
+
+    self.botnet_button = dialog.Button(
+      1.15, -0.95, 0.2, 0.1, 0.05,
+      self.OpenBotnetDialog, 'Botnet')
+
+    self.app_button = dialog.Button(
+      1.4, -0.95, 0.15, 0.1, 0.05,
+      self.OpenAppDialog, 'App')
+
+    self.elements = [self.research_button, self.botnet_button, self.app_button]
 
   def RenderHud(self):
     # Center: Turn/date, flops, resources, current action
@@ -75,6 +85,9 @@ class GameLoop(object):
 
     # Left: Techs + research button
     self.RenderHudTech()
+
+    # Right: Botnets + apps
+    self.RenderHudGlobals()
 
     for e in self.elements:
       if e == self.active_element:
@@ -86,6 +99,20 @@ class GameLoop(object):
         a = 0
       e.Render(self.render, self.text, a)
 
+  def RenderHudGlobals(self):
+    w = 0.5
+    h = 0.2 + len(self.game_state.glbls) * 0.05
+    r = 1.6
+    l = r - w
+    b = -1.0
+    t = b + h
+
+    self.render.DrawSolidBoxWithBorder(l, b, w, h, 0.01)
+
+    for i, g in enumerate(self.game_state.glbls):
+      self.text.DrawString(l + 0.05, t - 0.1 - 0.05 * i, 0.05,
+                           render_state.Black,
+                           g.Description())
 
   def RenderHudTech(self):
     w = 0.5
@@ -195,6 +222,14 @@ class GameLoop(object):
 
   def OpenResearchDialog(self):
     self.dialog = research.ResearchDialog(self.render, self.text, self)
+
+  def OpenBotnetDialog(self):
+    self.dialog = create.CreateBotnetDialog(
+      self.render, self.text, self)
+
+  def OpenAppDialog(self):
+    self.dialog = create.CreateAppDialog(
+      self.render, self.text, self)
 
   def OpenDialogFor(self, n):
     d = dialog.Dialog(self.render, self.text, self)
