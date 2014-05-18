@@ -7,4 +7,5 @@ Tank = 5
 Bomber = 6
 Riot = 7
 Security = 8
-Num = 9
+Military = 9
+Num = 10

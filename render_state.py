@@ -64,7 +64,8 @@ class Render(object):
                      icons.Tank: 'tank',
                      icons.Bomber: 'bomber',
                      icons.Riot: 'riot',
-                     icons.Security: 'security'}
+                     icons.Security: 'security',
+                     icons.Military: 'military'}
     for i in xrange(icons.Num):
       self.icon_node_map.append(len(files))
       files.append(icon_file_map[i])
