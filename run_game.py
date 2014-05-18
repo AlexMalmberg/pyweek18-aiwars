@@ -16,7 +16,6 @@ import world
 import n_city
 import n_datacenter
 import n_factory
-import n_mine
 import vec
 
 
@@ -58,9 +57,6 @@ def main():
     gs.AddNode(n2)
     n2.control = True
     n2.steal_fraction = 20
-
-    n3 = n_mine.Mine(vec.Vec(7, 7), 0, 4)
-    gs.AddNode(n3)
 
     n4 = n_factory.Factory(vec.Vec(8, 8), 0, 4)
     gs.AddNode(n4)
