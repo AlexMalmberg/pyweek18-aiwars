@@ -24,10 +24,6 @@ class Factory(n_stealable.Stealable):
   def StopBuilding(self):
     self.building = False
 
-  def Captured(self):
-    self.building = False
-    self.progress = 0
-
   def Discoverable(self):
     return self.building
 

@@ -7,6 +7,7 @@ class Node(object):
     self.control = False
     self.immune_until = 0
     self.owner = owner
+    self.original_owner = owner
 
   def Flops(self):
     return 0
@@ -14,12 +15,13 @@ class Node(object):
   def PopulationFlops(self):
     return 0
 
-  def Captured(self):
-    pass
+  def Captured(self, ai):
+    self.owner = ai
 
   def Discovered(self):
     # TODO: notify somehow
     self.control = False
+    self.owner = self.original_owner
 
   def EndOfTurnUpdate(self, game_state):
     pass
