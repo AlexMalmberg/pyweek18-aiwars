@@ -1,5 +1,6 @@
 import ctypes
 import pygame
+import random
 import sys
 from OpenGL.GL import *
 
@@ -25,6 +26,9 @@ def _MakeWidescreen(width, height):
 
 
 class Render(object):
+  AnimationTimeOffsetScale = 0.1
+  AnimationTimeScale = 0.1
+
   def LoadStuff(self):
     # Tile texture arrays.
     files = []
@@ -94,6 +98,170 @@ void main(){
   gl_FragColor = texture(texture_atlas, gl_TexCoord[0].xyz);
 }
 """)
+
+
+# Texture:
+# At each point, need:
+# - Color of pulse. gl_Color.rgb
+# - Tex coords to get local alpha and stroke distance. gl_TexCoord[0]
+# - Local sampler offset: gl_Vertex.z
+# - Local sampler scale: gl_Vertex.w
+#
+# Solid:
+# At each point, need:
+# - Color of pulse. gl_Color.rgb
+# - Local pulse offset: gl_Vertex.z
+#   (equal to sampler offset + sampler scale * stroke dist)
+
+    self.solid_pulse_shader = self.BuildShader('solid pulse shader', """
+#version 120
+
+varying vec4 color;
+varying float stroke_distance;
+
+void main() {
+  gl_Position = gl_ModelViewProjectionMatrix * vec4(gl_Vertex.xy, 0, 1);
+  color = gl_Color;
+  stroke_distance = gl_Vertex.z;
+}
+""", """
+#version 120
+
+uniform sampler1D line_pulse;
+uniform float global_pulse_offset;
+uniform float global_pulse_scale;
+
+varying vec4 color;
+varying float stroke_distance;
+
+void main(){
+  float offset = global_pulse_offset + stroke_distance * global_pulse_scale;
+  float pulse = 2.0 * texture1D(line_pulse, offset);
+
+  vec4 col;
+  if (pulse > 1)
+    col = mix(color, vec4(1, 1, 1, 1), pulse - 1);
+  else
+    col = mix(vec4(0, 0, 0, 1), color, pulse);
+  gl_FragColor = col;
+}
+""")
+
+    # TODO: proper blending
+    # r = ur * (1 - a) * (1 - ga) + (tr * a * (1 - ga) + gr * ga)
+    # so set a = 1 - (1 - a) * (1 - ga)
+    #
+    # then find r so that:
+    # r * (1 - a) * (1 - ga) = tr * a * (1 - ga) + gr * ga
+    #
+    # r = tr * a / (1 - a) + gr * ga / (1 - a) * (1 - ga)
+
+    self.texture_pulse_shader = self.BuildShader('solid pulse shader', """
+#version 120
+
+varying vec4 color;
+varying float sampler_offset;
+varying float sampler_scale;
+
+void main() {
+  gl_Position = gl_ModelViewProjectionMatrix * vec4(gl_Vertex.xy, 0, 1);
+  gl_TexCoord[0].xyz = gl_MultiTexCoord0.xyz;
+  color = gl_Color;
+  sampler_offset = gl_Vertex.z;
+  sampler_scale = gl_Vertex.w;
+}
+""", """
+#version 130
+
+uniform sampler2DArray color_tex;
+uniform sampler2DArray line_tex;
+
+uniform sampler1D line_pulse;
+uniform float global_pulse_offset;
+uniform float global_pulse_scale;
+
+uniform float base_strength;
+uniform float pulse_strength;
+
+varying vec4 color;
+varying float sampler_offset;
+varying float sampler_scale;
+
+void main(){
+  vec4 base_color = texture(color_tex, gl_TexCoord[0].xyz) * base_strength;
+  vec4 line_color = texture(line_tex, gl_TexCoord[0].xyz);
+
+  float stroke_dist = line_color.r * sampler_scale + sampler_offset;
+  float offset = global_pulse_offset + stroke_dist * global_pulse_scale;
+  float pulse = 2.0 * texture1D(line_pulse, offset);
+  pulse *= pulse_strength;
+
+  vec4 pulse_col;
+  if (pulse > 1)
+    pulse_col = mix(color, vec4(1, 1, 1, 1), pulse - 1);
+  else
+    pulse_col = mix(vec4(0, 0, 0, 1), color, pulse);
+
+  gl_FragColor = base_color + line_color.a * pulse_col;
+}
+""")
+
+    self.line_pulse_texture = glGenTextures(1)
+    pw = 8
+    cbuf = (ctypes.c_ubyte * pw)()
+    for i in xrange(pw):
+      cbuf[i] = random.randint(80, 255)
+    glBindTexture(GL_TEXTURE_1D, self.line_pulse_texture)
+    glTexParameter(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameter(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameter(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexImage1D(GL_TEXTURE_1D, 0, 1, pw, 0, GL_RED, GL_UNSIGNED_BYTE, cbuf)
+
+  def TexturePulseShaderTile(self):
+    pass
+
+  def TexturePulseShaderIcon(self):
+    prg = self.texture_pulse_shader
+    glUseProgram(prg)
+
+    l = glGetUniformLocation(prg, b'global_pulse_offset')
+    glUniform1f(l, self.animation_time * self.AnimationTimeOffsetScale)
+    l = glGetUniformLocation(prg, b'global_pulse_scale')
+    glUniform1f(l, self.AnimationTimeScale)
+
+    l = glGetUniformLocation(prg, b'base_strength')
+    glUniform1f(l, 1 - self.wireframe_frac)
+    l = glGetUniformLocation(prg, b'pulse_strength')
+    glUniform1f(l, 0.4 + 0.6 * self.wireframe_frac)
+
+    glActiveTexture(GL_TEXTURE2)
+    glBindTexture(GL_TEXTURE_1D, self.line_pulse_texture)
+    l = glGetUniformLocation(prg, b'line_pulse')
+    glUniform1i(l, 2)
+
+    glActiveTexture(GL_TEXTURE1)
+    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_line_textures)
+    l = glGetUniformLocation(prg, b'line_tex')
+    glUniform1i(l, 1)
+
+    glActiveTexture(GL_TEXTURE0)
+    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_col_textures)
+    l = glGetUniformLocation(prg, b'color_tex')
+    glUniform1i(l, 0)
+
+  def SolidPulseShader(self):
+    prg = self.solid_pulse_shader
+    glUseProgram(prg)
+    glBindTexture(GL_TEXTURE_1D, self.line_pulse_texture)
+    l = glGetUniformLocation(prg, b'line_pulse')
+    glUniform1i(l, 0)
+    l = glGetUniformLocation(prg, b'global_pulse_offset')
+    glUniform1f(l, self.animation_time * self.AnimationTimeOffsetScale)
+    l = glGetUniformLocation(prg, b'global_pulse_scale')
+    glUniform1f(l, self.AnimationTimeScale)
+
+  def RandomPulseOffset(self):
+    return random.uniform(0, 10)
 
   def __init__(self, screen):
     screen_width, screen_height = screen.get_width(), screen.get_height()
