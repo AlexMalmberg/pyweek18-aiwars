@@ -65,15 +65,13 @@
 
 * crack: factory, data center, military base
 
-T data center
- T adjust level of steal
+O data center
+ O adjust level of steal
+ - scrapped: you get a constant level
 
-T factory
- T start/stop building, adjust level of steal
-
-T city
- T incite riot
- T increase tech level
+O factory
+ O start/stop building, adjust level of steal
+ - scrapped: factories build continuously while you control them
 
 
 - phase 3
@@ -85,8 +83,13 @@ T unit movement
 T unit fighting
 T building units
 
+T city
+ T increase tech level
+ T incite riot
+
 T incite riot
-T spontaneous riot
+O spontaneous riot
+ - scrapped
 
 T military base
 T fake order
