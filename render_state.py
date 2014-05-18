@@ -217,10 +217,7 @@ void main(){
     glTexParameter(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexImage1D(GL_TEXTURE_1D, 0, 1, pw, 0, GL_RED, GL_UNSIGNED_BYTE, cbuf)
 
-  def TexturePulseShaderTile(self):
-    pass
-
-  def TexturePulseShaderIcon(self):
+  def _TexturePulseShaderCommon(self):
     prg = self.texture_pulse_shader
     glUseProgram(prg)
 
@@ -238,6 +235,24 @@ void main(){
     glBindTexture(GL_TEXTURE_1D, self.line_pulse_texture)
     l = glGetUniformLocation(prg, b'line_pulse')
     glUniform1i(l, 2)
+
+  def TexturePulseShaderTile(self):
+    prg = self.texture_pulse_shader
+    self._TexturePulseShaderCommon()
+
+    glActiveTexture(GL_TEXTURE1)
+    glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_line_textures)
+    l = glGetUniformLocation(prg, b'line_tex')
+    glUniform1i(l, 1)
+
+    glActiveTexture(GL_TEXTURE0)
+    glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_col_textures)
+    l = glGetUniformLocation(prg, b'color_tex')
+    glUniform1i(l, 0)
+
+  def TexturePulseShaderIcon(self):
+    prg = self.texture_pulse_shader
+    self._TexturePulseShaderCommon()
 
     glActiveTexture(GL_TEXTURE1)
     glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_line_textures)

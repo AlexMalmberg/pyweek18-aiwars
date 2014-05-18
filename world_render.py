@@ -7,10 +7,14 @@ import render_state
 import world
 
 
+def Fix(x, y):
+  return (x, y, (x + y) / 20., 1 / 20.)
+
+
 class WorldRenderer(object):
-  # 0 - 1: vertex
-  # 2 - 4: tex coord
-  VertStride = 5
+  # 0 - 3: vertex
+  # 4 - 5: tex coord
+  VertStride = 7
 
   def __init__(self, render, world):
     self.render = render
@@ -164,23 +168,23 @@ class WorldRenderer(object):
                        (0, 0)))
 
   def _AddMiniQuad(self, x, y, z, tex_coords):
-    self.quad_coord.append((x, y))
+    self.quad_coord.append(Fix(x, y))
     self.quad_tcoord.append((tex_coords[0][0], tex_coords[0][1], z))
-    self.quad_coord.append((x + 1, y))
+    self.quad_coord.append(Fix(x + 1, y))
     self.quad_tcoord.append((tex_coords[1][0], tex_coords[1][1], z))
-    self.quad_coord.append((x + 1, y + 1))
+    self.quad_coord.append(Fix(x + 1, y + 1))
     self.quad_tcoord.append((tex_coords[2][0], tex_coords[2][1], z))
-    self.quad_coord.append((x, y + 1))
+    self.quad_coord.append(Fix(x, y + 1))
     self.quad_tcoord.append((tex_coords[3][0], tex_coords[3][1], z))
 
   def _AddFullQuad(self, x, y, z):
-    self.quad_coord.append((3 * x, 3 * y))
+    self.quad_coord.append(Fix(3 * x, 3 * y))
     self.quad_tcoord.append((0, 0, z))
-    self.quad_coord.append((3 * (x + 1), 3 * y))
+    self.quad_coord.append(Fix(3 * (x + 1), 3 * y))
     self.quad_tcoord.append((1, 0, z))
-    self.quad_coord.append((3 * (x + 1), 3 * (y + 1)))
+    self.quad_coord.append(Fix(3 * (x + 1), 3 * (y + 1)))
     self.quad_tcoord.append((1, 1, z))
-    self.quad_coord.append((3 * x, 3 * (y + 1)))
+    self.quad_coord.append(Fix(3 * x, 3 * (y + 1)))
     self.quad_tcoord.append((0, 1, z))
 
   def _PrepareRendering(self):
@@ -205,25 +209,29 @@ class WorldRenderer(object):
     for i in xrange(n):
       verts[i * self.VertStride + 0] = self.quad_coord[i][0]
       verts[i * self.VertStride + 1] = self.quad_coord[i][1]
-      verts[i * self.VertStride + 2] = self.quad_tcoord[i][0]
-      verts[i * self.VertStride + 3] = self.quad_tcoord[i][1]
-      verts[i * self.VertStride + 4] = self.quad_tcoord[i][2]
+      verts[i * self.VertStride + 2] = self.quad_coord[i][2]
+      verts[i * self.VertStride + 3] = self.quad_coord[i][3]
+      verts[i * self.VertStride + 4] = self.quad_tcoord[i][0]
+      verts[i * self.VertStride + 5] = self.quad_tcoord[i][1]
+      verts[i * self.VertStride + 6] = self.quad_tcoord[i][2]
     glBufferData(GL_ARRAY_BUFFER, ctypes.sizeof(verts), verts,
                  GL_STATIC_DRAW)
 
   def Draw(self):
-    glUseProgram(self.prg)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
-    l = glGetUniformLocation(self.prg, b'texture_atlas')
-    glUniform1i(l, 0)
+    #glUseProgram(self.prg)
+    #glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
+    #l = glGetUniformLocation(self.prg, b'texture_atlas')
+    #glUniform1i(l, 0)
+    self.render.TexturePulseShaderTile()
+    glColor(0, 1, 0, 1)
     glBindBuffer(GL_ARRAY_BUFFER, self.vbo_vert)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.vbo_index)
     glEnableClientState(GL_VERTEX_ARRAY)
     glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-    glVertexPointer(2, GL_FLOAT, self.VertStride * render_state.F,
+    glVertexPointer(4, GL_FLOAT, self.VertStride * render_state.F,
                     render_state.FP(0))
     glTexCoordPointer(3, GL_FLOAT, self.VertStride * render_state.F,
-                      render_state.FP(2))
+                      render_state.FP(4))
     glDrawElements(GL_QUADS, self.num_index, GL_UNSIGNED_INT, None)
     glDisableClientState(GL_VERTEX_ARRAY)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY)
