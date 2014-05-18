@@ -229,7 +229,7 @@ void main(){
     l = glGetUniformLocation(prg, b'base_strength')
     glUniform1f(l, 1 - self.wireframe_frac)
     l = glGetUniformLocation(prg, b'pulse_strength')
-    glUniform1f(l, 0.4 + 0.6 * self.wireframe_frac)
+    glUniform1f(l, self.wireframe_frac)
 
     glActiveTexture(GL_TEXTURE2)
     glBindTexture(GL_TEXTURE_1D, self.line_pulse_texture)
@@ -469,10 +469,18 @@ void main(){
 
   def TextColor(self):
     wf = self.wireframe_frac
+
+    if wf > 0.5:
+      wf = (wf - 0.5) * 2
+      ca = (0.0, 1.0, 0.0)
+      cb = (0.4, 1.0, 0.4)
+    else:
+      wf *= 2
+      ca = (0.0, 0.0, 0.0)
+      cb = (0.0, 1.0, 0.0)
+
     nf = 1. - wf
 
-    ca = (0.0, 0.0, 0.0)
-    cb = (0.4, 1.0, 0.4)
     col = (ca[0] * nf + cb[0] * wf,
            ca[1] * nf + cb[1] * wf,
            ca[2] * nf + cb[2] * wf,
