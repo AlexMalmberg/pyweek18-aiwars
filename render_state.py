@@ -4,6 +4,7 @@ import sys
 from OpenGL.GL import *
 
 import game
+import icons
 
 
 F = ctypes.sizeof(ctypes.c_float)
@@ -53,6 +54,21 @@ class Render(object):
     # Icons.
     files = list(game.Research.IconNames)
     self.tech_icon = list(range(game.Research.Num))
+
+    self.icon_node_map = []
+    icon_file_map = {icons.City: 'city',
+                     icons.Factory: 'factory',
+                     icons.DataCenter: 'datacenter',
+                     icons.Bomb: 'bomb',
+                     icons.KillerRobot: 'robo',
+                     icons.Tank: 'tank',
+                     icons.Bomber: 'bomber',
+                     icons.Riot: 'riot',
+                     icons.Security: 'security'}
+    for i in xrange(icons.Num):
+      self.icon_node_map.append(len(files))
+      files.append(icon_file_map[i])
+
     self.icon_col_textures = self.LoadTextureArray(
       ['data/icon_%s_col.png' % f for f in files])
     self.icon_line_textures = self.LoadTextureArray(
