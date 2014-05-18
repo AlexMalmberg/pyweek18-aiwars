@@ -23,7 +23,6 @@ def main():
   n2 = n_datacenter.Datacenter(vec.Vec(6, 6), 0, 1.5e6)
   gs.AddNode(n2)
   n2.control = True
-  n2.steal_fraction = 20
 
   n3 = n_mine.Mine(vec.Vec(7, 7), 0, 4)
   gs.AddNode(n3)
@@ -55,7 +54,6 @@ def main():
     gs.AdvanceTurn()
     gs.Print()
 
-  n1.steal_fraction = 10
   gs.Print()
 
   a = a_crack.Crack(gs, n3)

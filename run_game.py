@@ -67,7 +67,6 @@ def main():
     gs.AddNode(n2)
     n2.control = True
     n2.owner = ai
-    n2.steal_fraction = 20
 
     n4 = n_factory.Factory(vec.Vec(8, 8), country2, 0, 4)
     gs.AddNode(n4)

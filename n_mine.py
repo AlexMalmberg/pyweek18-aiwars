@@ -16,7 +16,7 @@ class Mine(n_stealable.Stealable):
 
   def EndOfTurnUpdate(self, game_state):
     if self.control:
-      self.steal_accum += self.raw_material_per_turn * self.steal_fraction
+      self.steal_accum += self.raw_material_per_turn
       stolen = self.steal_accum / 100
       self.steal_accum %= 100
       if stolen:

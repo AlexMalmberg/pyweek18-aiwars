@@ -7,21 +7,20 @@ import params
 
 
 class Global(object):
-  def __init__(self, game_state, crypto, steal_fraction, spread):
+  def __init__(self, game_state, crypto, spread):
     self.crypto = crypto
-    self.steal_fraction = steal_fraction
     self.spread = int(spread)
     self.immune_until = game_state.turn + params.NewGlobalImmunePeriod
 
   def Flops(self, game_state):
     flops = game_state.PopulationFlops()
-    return int(flops * self.spread / 1e3 * self.steal_fraction / 100.)
+    return int(flops * self.spread / 1e3)
 
   def DiscoverProbability(self, game_state):
     """Returns probability of discovery per day."""
     my_crypto = self.crypto
     their_crypto = game_state.human_level[game.Research.Crypto]
-    return misc.StealDiscoverProb(my_crypto, their_crypto, self.steal_fraction)
+    return misc.StealDiscoverProb(my_crypto, their_crypto, 10)
 
   def Discovered(self, game_state):
     # TODO: notify
@@ -35,6 +34,6 @@ class Global(object):
         self.Discovered(game_state)
 
   def __repr__(self):
-    return ('%s(crypto=%i, steal_fraction=%i, spread=%i, immune_until=%i)'
-            % (self.__class__.__name__, self.crypto, self.steal_fraction,
+    return ('%s(crypto=%i, spread=%i, immune_until=%i)'
+            % (self.__class__.__name__, self.crypto,
                self.spread, self.immune_until))

@@ -18,7 +18,6 @@ class Crack(action.Action):
   def Execute(self):
     self.node.control = True
     self.node.Captured(self.game_state.ai_owner)
-    self.node.steal_fraction = 20
     self.node.immune_until = (
       self.game_state.turn + params.CrackedNodeImmunePeriod)
 

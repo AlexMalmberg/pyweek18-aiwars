@@ -7,7 +7,6 @@ import game
 class CreateGlobal(action.Action):
   def __init__(self, game_state):
     super(CreateGlobal, self).__init__(game_state)
-    self.steal_fraction = 10
 
     # This is fixed when the global is created.
     self.crypto = game_state.research_level[game.Research.Crypto]
@@ -36,4 +35,4 @@ class CreateGlobal(action.Action):
 
   def Execute(self):
     self.game_state.AddGlobal(self.Target()(
-        self.game_state, self.crypto, self.steal_fraction, self.Spread()))
+        self.game_state, self.crypto, self.Spread()))

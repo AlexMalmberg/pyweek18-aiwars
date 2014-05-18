@@ -16,7 +16,7 @@ class Datacenter(n_stealable.Stealable):
   def Flops(self):
     if not self.control:
       return 0
-    return int(self.flops * self.steal_fraction / 100)
+    return int(self.flops)
 
   def __attrrepr__(self):
     return (super(Datacenter, self).__attrrepr__()
