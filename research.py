@@ -29,15 +29,15 @@ class ResearchDialog(dialog.Dialog):
     self.current_tech = 0
     self.tech_icon[self.current_tech].SetHighlight(True)
 
-    self.title_text = dialog.Text(w / 2, 0.30, 0.1, render_state.Black,
+    self.title_text = dialog.Text(w / 2, 0.30, 0.1,
                                    True, 'title')
     self.AddElement(self.title_text)
 
-    self.flavor_text = dialog.Text(w / 2, 0.23, 0.05, render_state.Black,
+    self.flavor_text = dialog.Text(w / 2, 0.23, 0.05,
                                    True, 'flavor')
     self.AddElement(self.flavor_text)
 
-    self.cost_text = dialog.Text(w / 2, 0.18, 0.05, render_state.Black,
+    self.cost_text = dialog.Text(w / 2, 0.18, 0.05,
                                  True, 'cost')
     self.AddElement(self.cost_text)
 

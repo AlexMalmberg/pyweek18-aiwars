@@ -20,19 +20,19 @@ class CreateDialog(dialog.Dialog):
     self.AddElement(
       dialog.Button(w / 2 - 0.1, 0.05, 0.2, 0.1, 0.05, self.Go, 'Go!'))
 
-    self.AddElement(dialog.Text(w / 2, h - 0.15, 0.1, render_state.Black,
+    self.AddElement(dialog.Text(w / 2, h - 0.15, 0.1,
                                 True, title))
 
     y = h - 0.25
     for flavor_string in flavors:
-      self.AddElement(dialog.Text(w / 2, y, 0.05, render_state.Black,
+      self.AddElement(dialog.Text(w / 2, y, 0.05,
                                   True, flavor_string))
       y -= 0.05
 
     hide_string = (
       'Using %i-bit crypto to hide.'
       % (1 + self.game_loop.game_state.research_level[game.Research.Crypto]))
-    self.AddElement(dialog.Text(w / 2, y, 0.05, render_state.Black,
+    self.AddElement(dialog.Text(w / 2, y, 0.05,
                                 True, hide_string))
     y -= 0.1
 
@@ -42,7 +42,7 @@ class CreateDialog(dialog.Dialog):
       cost_string = 'Creating will take %i hours.' % h
     else:
       cost_string = 'Creating will take forever.'
-    self.AddElement(dialog.Text(w / 2, y, 0.05, render_state.Black,
+    self.AddElement(dialog.Text(w / 2, y, 0.05,
                                 True, cost_string))
 
     self.Ready()

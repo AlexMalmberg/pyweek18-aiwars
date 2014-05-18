@@ -118,7 +118,7 @@ class GameLoop(object):
 
     for i, g in enumerate(self.game_state.glbls):
       self.text.DrawString(l + 0.05, t - 0.1 - 0.05 * i, 0.05,
-                           render_state.Black,
+                           self.render.TextColor(),
                            g.Description())
 
   def RenderHudTech(self):
@@ -133,10 +133,10 @@ class GameLoop(object):
 
     for i in xrange(game.Research.Num):
       self.text.DrawString(l + 0.05, t - 0.1 - 0.05 * i, 0.05,
-                           render_state.Black,
+                           self.render.TextColor(),
                            '%i-bit' % (self.game_state.research_level[i] + 1))
       self.text.DrawString(l + 0.18, t - 0.1 - 0.05 * i, 0.05,
-                           render_state.Black,
+                           self.render.TextColor(),
                            game.Research.Names[i])
 
   def RenderHudCenter(self):
@@ -152,15 +152,16 @@ class GameLoop(object):
     self.render.DrawSolidBoxWithBorder(l, b, w, h, 0.01)
 
     # TODO: slowly morph this towards unix epoch timestamp
-    self.text.DrawString(l + 0.05, t - 0.1, 0.05, render_state.Black,
+    self.text.DrawString(l + 0.05, t - 0.1, 0.05, self.render.TextColor(),
                          misc.TurnToDate(self.game_state.turn))
 
-    self.text.DrawString(r - 0.05, t - 0.1, 0.05, render_state.Black,
+    self.text.DrawString(r - 0.05, t - 0.1, 0.05, self.render.TextColor(),
                           misc.FormatFlops(flops),
                           right=True)
 
     if self.game_state.current_action:
-      self.text.DrawString((l + r) / 2, t - 0.19, 0.05, render_state.Black,
+      self.text.DrawString((l + r) / 2, t - 0.19, 0.05,
+                           self.render.TextColor(),
                            self.game_state.current_action.Description(),
                            center=True)
       progress = (self.game_state.action_progress
@@ -172,7 +173,7 @@ class GameLoop(object):
         0.1,
         progress)
     else:
-      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, render_state.Black,
+      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, self.render.TextColor(),
                           'Idle', center=True)
 
   def RenderNodes(self):

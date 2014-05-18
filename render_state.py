@@ -366,41 +366,51 @@ void main(){
     return program
 
   def DrawBox(self, x, y, w, h, border, ca, cb):
-    # TODO: wireframe glowy-line shader
     wf = self.wireframe_frac
     nf = 1. - wf
     col = (ca[0] * nf + cb[0] * wf,
-           ca[1] * nf + cb[2] * wf,
-           ca[1] * nf + cb[2] * wf)
+           ca[1] * nf + cb[1] * wf,
+           ca[2] * nf + cb[2] * wf)
     glColor(col[0], col[1], col[2])
 
+    ofs = (x - y) * 4.
+
+    self.SolidPulseShader()
     glBegin(GL_QUADS)
 
-    glVertex(x, y)
-    glVertex(x + border, y)
-    glVertex(x + border, y + h - border)
-    glVertex(x, y + h - border)
+    glVertex(x, y, ofs + 0)
+    glVertex(x + border, y, ofs + 0)
+    glVertex(x + border, y + h - border, ofs + 0.25)
+    glVertex(x, y + h - border, ofs + 0.25)
 
-    glVertex(x + w, y)
-    glVertex(x + w - border, y)
-    glVertex(x + w - border, y + h - border)
-    glVertex(x + w, y + h - border)
+    glVertex(x + w, y, ofs + 0.75)
+    glVertex(x + w - border, y, ofs + 0.75)
+    glVertex(x + w - border, y + h - border, ofs + 0.5)
+    glVertex(x + w, y + h - border, ofs + 0.5)
 
-    glVertex(x, y)
-    glVertex(x, y + border)
-    glVertex(x + w, y + border)
-    glVertex(x + w, y)
+    glVertex(x, y, ofs + 1)
+    glVertex(x, y + border, ofs + 1)
+    glVertex(x + w, y + border, ofs + 0.75)
+    glVertex(x + w, y, ofs + 0.75)
 
-    glVertex(x, y + h)
-    glVertex(x, y + h - border)
-    glVertex(x + w, y + h - border)
-    glVertex(x + w, y + h)
+    glVertex(x, y + h, ofs + 0.25)
+    glVertex(x, y + h - border, ofs + 0.25)
+    glVertex(x + w, y + h - border, ofs + 0.5)
+    glVertex(x + w, y + h, ofs + 0.5)
 
     glEnd()
+    glUseProgram(0)
 
   def DrawSolidBoxWithBorder(self, x, y, w, h, border):
     # TODO: use solid-color raining numbers shader
-    glColor(BoxBackground)
+    wf = self.wireframe_frac
+    nf = 1. - wf
+    ca = BoxBackground
+    cb = Black
+    col = (ca[0] * nf + cb[0] * wf,
+           ca[1] * nf + cb[1] * wf,
+           ca[2] * nf + cb[2] * wf)
+    glColor(col[0], col[1], col[2])
     glBegin(GL_QUADS)
     glVertex(x, y)
     glVertex(x + w, y)
@@ -432,14 +442,43 @@ void main(){
   def DrawProgressBar(self, x, y, w, h, progress):
     glBegin(GL_QUADS)
     xmid = x + w * progress
-    glColor(0.2, 0.7, 0.2, 1)
+
+    wf = self.wireframe_frac
+    nf = 1. - wf
+
+    ca = (0, 0.7, 0)
+    cb = (0.2, 1.0, 0.2)
+    col = (ca[0] * nf + cb[0] * wf,
+           ca[1] * nf + cb[1] * wf,
+           ca[2] * nf + cb[2] * wf)
+    glColor(col[0], col[1], col[2], 1)
+
     glVertex(x, y)
     glVertex(x, y + h)
     glVertex(xmid, y + h )
     glVertex(xmid, y)
-    glColor(0, 0, 00, 1)
+
+    ca = (0, 0, 0)
+    cb = (0.2, 0.2, 0.2)
+    col = (ca[0] * nf + cb[0] * wf,
+           ca[1] * nf + cb[1] * wf,
+           ca[2] * nf + cb[2] * wf)
+    glColor(col[0], col[1], col[2], 1)
+
     glVertex(xmid, y)
     glVertex(xmid, y + h)
     glVertex(x + w, y + h )
     glVertex(x + w, y)
     glEnd()
+
+  def TextColor(self):
+    wf = self.wireframe_frac
+    nf = 1. - wf
+
+    ca = (0.0, 0.0, 0.0)
+    cb = (0.4, 1.0, 0.4)
+    col = (ca[0] * nf + cb[0] * wf,
+           ca[1] * nf + cb[1] * wf,
+           ca[2] * nf + cb[2] * wf,
+           1)
+    return col

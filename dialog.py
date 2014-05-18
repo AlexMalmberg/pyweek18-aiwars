@@ -26,16 +26,15 @@ class DialogElement(object):
 
 
 class Text(DialogElement):
-  def __init__(self, x, y, size, color, center, msg):
+  def __init__(self, x, y, size, center, msg):
     self.x = x
     self.y = y
     self.size = size
-    self.color = color
     self.center = center
     self.msg = str(msg)
 
   def Render(self, render, text, active):
-    text.DrawString(self.x, self.y, self.size, self.color, self.msg,
+    text.DrawString(self.x, self.y, self.size, render.TextColor(), self.msg,
                     center=self.center)
 
 
@@ -65,7 +64,8 @@ class Button(DialogElement):
       ca = render_state.Black
       cb = render_state.GreenWireframe
     render.DrawBox(self.x, self.y, self.width, self.height, self.Border, ca, cb)
-    text.DrawString(self.tx, self.ty, self.size, ca, self.msg, center=True)
+    text.DrawString(self.tx, self.ty, self.size, render.TextColor(),
+                    self.msg, center=True)
 
   def Unclicked(self, x, y):
     if misc.Inside(x, y, self.active_region):
