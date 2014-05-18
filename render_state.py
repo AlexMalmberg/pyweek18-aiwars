@@ -422,11 +422,7 @@ void main(){
                  Black, GreenWireframe)
 
   def DrawIcon(self, x, y, w, h, icon):
-    prg = self.tile_shader
-    glUseProgram(prg)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_col_textures)
-    l = glGetUniformLocation(prg, b'texture_atlas')
-    glUniform1i(l, 0)
+    self.TexturePulseShaderIcon()
     glBegin(GL_QUADS)
     glTexCoord3f(0, 0, icon)
     glVertex(x, y)
