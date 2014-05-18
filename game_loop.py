@@ -363,7 +363,8 @@ class GameLoop(object):
           self.turn_time -= 1
 
       self.render.animation_time = self.animation_time / 1000.
-      self.turn_time = self.turn_time
+      self.render.turn_time = self.turn_time
+      self.render.wireframe_frac = math.modf(self.animation_time / 10000.)[0]
 
       self.Render(clock)
 
