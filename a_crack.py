@@ -21,3 +21,6 @@ class Crack(action.Action):
     self.node.steal_fraction = 20
     self.node.immune_until = (
       self.game_state.turn + params.CrackedNodeImmunePeriod)
+
+  def Description(self):
+    return 'Cracking %s' % self.node.Description()
