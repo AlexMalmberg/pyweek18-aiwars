@@ -68,7 +68,7 @@ class CityDialog(dialog.Dialog):
       dialog.Button(0.05, 0.05, 0.2, 0.1, 0.05, self.Close, 'Cancel'))
 
     self.AddElement(dialog.Text(w / 2, h - 0.15, 0.1,
-                                True, 'Cracking'))
+                                True, 'City'))
 
     y = h - 0.25
     for flavor_string in flavors:
