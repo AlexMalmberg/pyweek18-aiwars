@@ -8,6 +8,7 @@ class Node(object):
     self.immune_until = 0
     self.owner = owner
     self.original_owner = owner
+    self.size = 1
 
   def Flops(self):
     return 0

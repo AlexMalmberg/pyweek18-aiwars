@@ -39,30 +39,36 @@ class NodeRenderer(object):
       i += 1
       rofs2 = self.random_offsets[i]
       i += 1
+
+      l = 3 * x
+      r = 3 * (x + n.size)
+      b = 3 * y
+      t = 3 * (y + n.size)
+
       icon_buf += [
-        3 * x, 3 * y, rofs1, 1,
+        l, b, rofs1, 1,
           0, 0, black,
           col[0], col[1], col[2],
-        3 * (x + 1), 3 * y, rofs1, 1,
+        r, b, rofs1, 1,
           1, 0, black,
           col[0], col[1], col[2],
-        3 * (x + 1), 3 * (y + 1), rofs1, 1,
+        r, t, rofs1, 1,
           1, 1, black,
           col[0], col[1], col[2],
-        3 * x, 3 * (y + 1), rofs1, 1,
+        l, t, rofs1, 1,
           0, 1, black,
           col[0], col[1], col[2],
 
-        3 * x + 0.2, 3 * y + 0.2, rofs2, 1,
+        l + 0.2, b + 0.2, rofs2, 1,
           0, 0, icon,
           col[0], col[1], col[2],
-        3 * (x + 1) - 0.2, 3 * y + 0.2, rofs2, 1,
+        r - 0.2, b + 0.2, rofs2, 1,
           1, 0, icon,
           col[0], col[1], col[2],
-        3 * (x + 1) - 0.2, 3 * (y + 1) - 0.2, rofs2, 1,
+        r - 0.2, t - 0.2, rofs2, 1,
           1, 1, icon,
           col[0], col[1], col[2],
-        3 * x + 0.2, 3 * (y + 1) - 0.2, rofs2, 1,
+        l + 0.2, t - 0.2, rofs2, 1,
           0, 1, icon,
           col[0], col[1], col[2]]
       self.icon_num += 8
@@ -70,25 +76,25 @@ class NodeRenderer(object):
       rofs1 = self.random_offsets[i]
       i += 1
       border_buf += [
-        3 * x, 3 * y, rofs1 + 0, col[0], col[1], col[2],
-        3 * x + 0.2, 3 * y, rofs1 + 0, col[0], col[1], col[2],
-        3 * x + 0.2, 3 * (y + 1), rofs1 + 0.25, col[0], col[1], col[2],
-        3 * x, 3 * (y + 1), rofs1 + 0.25, col[0], col[1], col[2],
+        l, b, rofs1 + 0, col[0], col[1], col[2],
+        l + 0.2, b, rofs1 + 0, col[0], col[1], col[2],
+        l + 0.2, t, rofs1 + 0.25, col[0], col[1], col[2],
+        l, t, rofs1 + 0.25, col[0], col[1], col[2],
 
-        3 * (x + 1), 3 * y, rofs1 + 0.75, col[0], col[1], col[2],
-        3 * (x + 1) - 0.2, 3 * y, rofs1 + 0.75, col[0], col[1], col[2],
-        3 * (x + 1) - 0.2, 3 * (y + 1), rofs1 + 0.5, col[0], col[1], col[2],
-        3 * (x + 1), 3 * (y + 1), rofs1 + 0.5, col[0], col[1], col[2],
+        r, b, rofs1 + 0.75, col[0], col[1], col[2],
+        r - 0.2, b, rofs1 + 0.75, col[0], col[1], col[2],
+        r - 0.2, t, rofs1 + 0.5, col[0], col[1], col[2],
+        r, t, rofs1 + 0.5, col[0], col[1], col[2],
 
-        3 * x, 3 * y, rofs1 + 1, col[0], col[1], col[2],
-        3 * x, 3 * y + 0.2, rofs1 + 1, col[0], col[1], col[2],
-        3 * (x + 1), 3 * y + 0.2, rofs1 + 0.75, col[0], col[1], col[2],
-        3 * (x + 1), 3 * y, rofs1 + 0.75, col[0], col[1], col[2],
+        l, b, rofs1 + 1, col[0], col[1], col[2],
+        l, b + 0.2, rofs1 + 1, col[0], col[1], col[2],
+        r, b + 0.2, rofs1 + 0.75, col[0], col[1], col[2],
+        r, b, rofs1 + 0.75, col[0], col[1], col[2],
 
-        3 * x, 3 * (y + 1), rofs1 + 0.25, col[0], col[1], col[2],
-        3 * x, 3 * (y + 1) - 0.2, rofs1 + 0.25, col[0], col[1], col[2],
-        3 * (x + 1), 3 * (y + 1) - 0.2, rofs1 + 0.5, col[0], col[1], col[2],
-        3 * (x + 1), 3 * (y + 1), rofs1 + 0.5, col[0], col[1], col[2],
+        l, t, rofs1 + 0.25, col[0], col[1], col[2],
+        l, t - 0.2, rofs1 + 0.25, col[0], col[1], col[2],
+        r, t - 0.2, rofs1 + 0.5, col[0], col[1], col[2],
+        r, t, rofs1 + 0.5, col[0], col[1], col[2],
         ]
       self.border_num += 16
 

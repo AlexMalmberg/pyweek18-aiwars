@@ -9,6 +9,7 @@ class City(node.Node):
     super(City, self).__init__(pos, owner)
     self.population = population
     self.nanotech_level = 0
+    self.size = 2
 
   def PopulationFlops(self):
     # TODO: tune
