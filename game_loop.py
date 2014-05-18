@@ -61,9 +61,8 @@ class GameLoop(object):
     self.turn_rate = 200.
     self.quit = False
 
-    self.world_translate = [-self.world.width * 3. / 2.,
-                            -self.world.height * 3. / 2.]
-    self.world_scale = 0.02
+    self.world_translate = [-53.13, -33.24]
+    self.world_scale = 0.0301
 
     self.button_pressed = False
     self.active_element = None
