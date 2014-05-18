@@ -76,3 +76,12 @@ def TurnToDate(turn):
   d = datetime.datetime.utcfromtimestamp(StartingDate + turn * 3600)
   return ('%i-%02i-%02i %02i:00'
           % (d.year, d.month, d.day, d.hour))
+
+
+def Sign(x):
+  if x < 0:
+    return -1
+  elif x > 0:
+    return 1
+  else:
+    return 0
