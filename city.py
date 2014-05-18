@@ -1,4 +1,5 @@
 import a_riot
+import a_upload
 import dialog
 import game
 
