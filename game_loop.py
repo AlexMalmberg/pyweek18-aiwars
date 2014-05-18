@@ -11,6 +11,7 @@ import game
 import misc
 import n_datacenter
 import n_factory
+import node_render
 import render_state
 import research
 import text
@@ -52,6 +53,7 @@ class GameLoop(object):
 
     self.world = self.game_state.world
     self.world_render = world_render.WorldRenderer(self.render, self.world)
+    self.node_render = node_render.NodeRenderer(self.render, self.game_state)
     self.dialog = None
     self.animation_time = 0
     self.turn_time = 0
@@ -174,25 +176,7 @@ class GameLoop(object):
                           'Idle', center=True)
 
   def RenderNodes(self):
-    prg = self.render.tile_shader
-    GL.glUseProgram(prg)
-    GL.glBindTexture(GL.GL_TEXTURE_2D_ARRAY, self.render.icon_col_textures)
-    l = GL.glGetUniformLocation(prg, b'texture_atlas')
-    GL.glUniform1i(l, 0)
-    GL.glBegin(GL.GL_QUADS)
-    for n in self.game_state.nodes:
-      x, y = n.pos.x, n.pos.y
-      icon = self.render.icon_node_map[n.icon]
-      GL.glTexCoord3f(0, 0, icon)
-      GL.glVertex(3 * x, 3 * y)
-      GL.glTexCoord3f(1, 0, icon)
-      GL.glVertex(3 * (x + 1), 3 * y)
-      GL.glTexCoord3f(1, 1, icon)
-      GL.glVertex(3 * (x + 1), 3 * (y + 1))
-      GL.glTexCoord3f(0, 1, icon)
-      GL.glVertex(3 * x, 3 * (y + 1))
-    GL.glEnd()
-    GL.glUseProgram(0)
+    self.node_render.Render()
 
   def RenderWorld(self):
     GL.glPushMatrix()
@@ -375,6 +359,7 @@ class GameLoop(object):
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
+          self.node_render.Update(self.game_state)
           self.turn_time -= 1
 
       self.render.animation_time = self.animation_time / 1000.
