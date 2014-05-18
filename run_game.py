@@ -57,7 +57,7 @@ def main():
     #  nc = n_city.City(vec.Vec(i * 47 % w.width, i * 9486 % w.height),
     #                   country1, 1e6)
     #  gs.AddNode(nc)
-    nc = n_city.City(vec.Vec(14, 14), country1, 1e6)
+    nc = n_city.City(vec.Vec(15, 15), country1, 1e6)
     gs.AddNode(nc)
 
     n1 = n_datacenter.Datacenter(vec.Vec(5, 5), country1, 1, 2.4e6)
@@ -72,11 +72,55 @@ def main():
     n4 = n_factory.Factory(vec.Vec(8, 8), country2, 0, 4)
     gs.AddNode(n4)
 
-    n5 = n_unit.Unit(vec.Vec(10, 10), ai, True, icons.Bomber, 10, 2, False)
-    gs.AddNode(n5)
+    unit1 = n_unit.Unit(vec.Vec(10, 10), ai, True, icons.Bomber, 10, 2, False)
+    gs.AddNode(unit1)
 
-    n6 = n_unit.Unit(vec.Vec(10, 11), ai, False, icons.KillerRobot, 10, 4, True)
+    unit2 = n_unit.Unit(vec.Vec(10, 11), ai, False, icons.KillerRobot, 10, 4,
+                        True)
+    gs.AddNode(unit2)
+
+    nf = n_factory.Factory(vec.Vec(50, 8), country2, 0, 4)
+    gs.AddNode(nf)
+
+    nf2 = n_factory.Factory(vec.Vec(55, 3), country2, 1, 15)
+    gs.AddNode(nf2)
+
+    nf3 = n_factory.Factory(vec.Vec(48, 22), country2, 1, 15)
+    gs.AddNode(nf3)
+
+    n6 = n_datacenter.Datacenter(vec.Vec(50, 6), country2, 1, 3e6)
     gs.AddNode(n6)
+
+    n7 = n_datacenter.Datacenter(vec.Vec(38, 8), country2, 0, 0.5e6)
+    gs.AddNode(n7)
+
+    n8 = n_datacenter.Datacenter(vec.Vec(50, 20), country2, 0, 0.5e6)
+    gs.AddNode(n8)
+
+    n9 = n_datacenter.Datacenter(vec.Vec(58, 10), country2, 0, 5e6)
+    gs.AddNode(n9)
+
+    nc2 = n_city.City(vec.Vec(38, 3), country2, 10e6)
+    gs.AddNode(nc2)
+
+    nc3 = n_city.City(vec.Vec(40, 13), country2, 20e6)
+    gs.AddNode(nc3)
+
+    nc4 = n_city.City(vec.Vec(58, 12), country2, 20e6)
+    gs.AddNode(nc4)
+
+    nc5 = n_city.City(vec.Vec(20, 3), country1, 20e6)
+    gs.AddNode(nc5)
+
+    nc6 = n_city.City(vec.Vec(3, 2), country1, 20e6)
+    gs.AddNode(nc6)
+
+
+    n9 = n_datacenter.Datacenter(vec.Vec(22, 13), country1, 0, 0.5e6)
+    gs.AddNode(n9)
+
+    n10 = n_datacenter.Datacenter(vec.Vec(20, 8), country1, 0, 0.5e6)
+    gs.AddNode(n10)
 
   gl = game_loop.GameLoop(render, t, gs, m)
   gl.Play()
