@@ -78,21 +78,30 @@ O factory
 
 * better node display
 
+
+- phase 3b
+
 T units
 T unit movement
 T unit fighting
 T building units
 
+
+- phase 3c
+
 T city
  T increase tech level
  T incite riot
 
-T incite riot
 O spontaneous riot
  - scrapped
 
+
+- phase 3d
+
 T military base
 T control unit
+
 O fake order
  - scrapped
 
@@ -102,8 +111,6 @@ O fake order
 T security companies trying to track you down
 T country diplomacy/wars
 T victory conditions
-* music
-T sound effects
 
 O maybe: time management
  - scrapped
@@ -111,6 +118,8 @@ O maybe: time management
 
 - phase 5
 
+T sound effects
+* music
 * graphics
 
 
