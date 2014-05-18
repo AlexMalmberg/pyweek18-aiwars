@@ -85,6 +85,8 @@ class Unit(node.Node):
       self.move_div = 9 - robo
       self.strength = 1 + robo * 2
       self.max_health = 20 + 20 * robo
+      if robo >= 4:
+        self.can_fly = True
 
     self.move_acc += 1
     if self.move_acc > self.move_div:
