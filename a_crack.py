@@ -11,7 +11,7 @@ class Crack(action.Action):
     self.node = node
 
   def Cost(self):
-    defense = self.node.crack_defense
+    defense = self.game_state.human_paranoia_level + self.node.bonus_defense
     attack = self.game_state.research_level[game.Research.Cracking]
     return self._CostAttackDefense(4e6, attack, defense)
 

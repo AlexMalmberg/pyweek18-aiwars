@@ -8,11 +8,6 @@ import random
 
 
 class Stealable(node.Node):
-  def __init__(self, pos, owner, crack_defense):
+  def __init__(self, pos, owner, bonus_defense):
     super(Stealable, self).__init__(pos, owner)
-    self.crack_defense = crack_defense
-
-  def __attrrepr__(self):
-    return (super(Stealable, self).__attrrepr__()
-            + (', crack_defense=%i'
-               % self.crack_defense))
+    self.bonus_defense = bonus_defense

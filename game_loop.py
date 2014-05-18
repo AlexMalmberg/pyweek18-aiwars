@@ -14,6 +14,7 @@ import misc
 import n_city
 import n_datacenter
 import n_factory
+import n_military
 import n_unit
 import node_render
 import render_state
@@ -254,7 +255,8 @@ class GameLoop(object):
       self.render, self.text, self)
 
   def OpenDialogFor(self, n):
-    if isinstance(n, (n_factory.Factory, n_datacenter.Datacenter)):
+    if isinstance(n, (n_factory.Factory, n_datacenter.Datacenter,
+                      n_military.Military)):
       try:
         act = a_crack.Crack(self.game_state, n)
         self.dialog = crack.CrackDialog(self.render, self.text, self, act)

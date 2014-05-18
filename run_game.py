@@ -18,6 +18,7 @@ import icons
 import n_city
 import n_datacenter
 import n_factory
+import n_military
 import n_unit
 import owner
 import vec
@@ -106,6 +107,9 @@ def main():
 
     nc6 = n_city.City(vec.Vec(3, 2), country1, 3e6)
     gs.AddNode(nc6)
+
+    nm1 = n_military.Military(vec.Vec(7, 5), country1, 2, 4)
+    gs.AddNode(nm1)
 
 
     n9 = n_datacenter.Datacenter(vec.Vec(22, 13), country1, 0, 0.5e6)

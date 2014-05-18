@@ -8,8 +8,8 @@ import vec
 class Factory(n_stealable.Stealable):
   icon = icons.Factory
 
-  def __init__(self, pos, owner, crack_defense, build_per_turn):
-    super(Factory, self).__init__(pos, owner, crack_defense)
+  def __init__(self, pos, owner, bonus_defense, build_per_turn):
+    super(Factory, self).__init__(pos, owner, bonus_defense)
     self.build_per_turn = build_per_turn
     self.progress = 0
     self.cost = 50

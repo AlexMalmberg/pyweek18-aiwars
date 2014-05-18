@@ -6,8 +6,8 @@ import n_stealable
 class Datacenter(n_stealable.Stealable):
   icon = icons.DataCenter
 
-  def __init__(self, pos, owner, crack_defense, flops):
-    super(Datacenter, self).__init__(pos, owner, crack_defense)
+  def __init__(self, pos, owner, bonus_defense, flops):
+    super(Datacenter, self).__init__(pos, owner, bonus_defense)
     self.flops = int(flops)
 
   def Discoverable(self):

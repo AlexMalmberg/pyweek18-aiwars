@@ -3,8 +3,8 @@ import n_stealable
 
 
 class Mine(n_stealable.Stealable):
-  def __init__(self, pos, crack_defense, raw_material_per_turn):
-    super(Mine, self).__init__(pos, crack_defense)
+  def __init__(self, pos, owner, raw_material_per_turn):
+    super(Mine, self).__init__(pos, owner)
     self.raw_material_per_turn = raw_material_per_turn
     self.steal_accum = 0
 
