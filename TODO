@@ -89,9 +89,9 @@ O factory
 
 - phase 3c
 
-T city
- T increase tech level
- T incite riot
+* city
+ * increase tech level
+ * incite riot
 
 O spontaneous riot
  - scrapped
@@ -99,8 +99,8 @@ O spontaneous riot
 
 - phase 3d
 
-T military base
-T control unit
+* military base
+ * nukes
 
 O fake order
  - scrapped
@@ -111,6 +111,7 @@ O fake order
 T security companies trying to track you down
 T country diplomacy/wars
 T victory conditions
+ T wireframe vs. normal mode depends on progress
 
 O maybe: time management
  - scrapped

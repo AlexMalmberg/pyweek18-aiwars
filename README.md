@@ -1,6 +1,10 @@
 pyweek18-aiwars
 ===============
 
+Authors
+=======
+Alexander Malmberg, Christofer Malmberg, Peter Sheerin, Andras Barjak
+
 
 License
 =======

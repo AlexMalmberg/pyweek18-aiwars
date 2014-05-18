@@ -118,6 +118,26 @@ def main():
     n10 = n_datacenter.Datacenter(vec.Vec(20, 8), country1, 0, 0.5e6)
     gs.AddNode(n10)
 
+    unit = n_unit.Unit(vec.Vec(4, 5), country1, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+    unit = n_unit.Unit(vec.Vec(4, 4), country1, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+    unit = n_unit.Unit(vec.Vec(15, 15), country1, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+
+    unit = n_unit.Unit(vec.Vec(49, 20), country2, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+    unit = n_unit.Unit(vec.Vec(50, 19), country2, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+    unit = n_unit.Unit(vec.Vec(51, 19), country2, False,
+                       icons.Tank, 10, 200, 2, False)
+    gs.AddNode(unit)
+
   gl = game_loop.GameLoop(render, t, gs, m)
   gl.Play()
 
