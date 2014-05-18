@@ -169,15 +169,25 @@ class GameLoop(object):
                           'Idle', center=True)
 
   def RenderNodes(self):
+    prg = self.render.tile_shader
+    GL.glUseProgram(prg)
+    GL.glBindTexture(GL.GL_TEXTURE_2D_ARRAY, self.render.icon_col_textures)
+    l = GL.glGetUniformLocation(prg, b'texture_atlas')
+    GL.glUniform1i(l, 0)
     GL.glBegin(GL.GL_QUADS)
     for n in self.game_state.nodes:
       x, y = n.pos.x, n.pos.y
-      GL.glColor(1, 0, 0, 1)
+      icon = self.render.icon_node_map[n.icon]
+      GL.glTexCoord3f(0, 0, icon)
       GL.glVertex(3 * x, 3 * y)
+      GL.glTexCoord3f(1, 0, icon)
       GL.glVertex(3 * (x + 1), 3 * y)
+      GL.glTexCoord3f(1, 1, icon)
       GL.glVertex(3 * (x + 1), 3 * (y + 1))
+      GL.glTexCoord3f(0, 1, icon)
       GL.glVertex(3 * x, 3 * (y + 1))
     GL.glEnd()
+    GL.glUseProgram(0)
 
   def RenderWorld(self):
     GL.glPushMatrix(GL.GL_MODELVIEW)
