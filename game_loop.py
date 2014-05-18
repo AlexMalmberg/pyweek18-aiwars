@@ -191,6 +191,18 @@ class GameLoop(object):
     self.RenderNodes()
     # TODO: Draw units + unit effects.
 
+    if (self.button_pressed
+        and self.partial_order_from
+        and self.partial_order_to):
+      GL.glColor(0.1, 1.0, 0.1, 1.0)
+      GL.glLineWidth(2)
+      GL.glBegin(GL.GL_LINES)
+      GL.glVertex(self.partial_order_from[0] * 3,
+                  self.partial_order_from[1] * 3)
+      GL.glVertex(self.partial_order_to[0] * 3,
+                  self.partial_order_to[1] * 3)
+      GL.glEnd()
+
     GL.glPopMatrix()
 
   def Render(self, clock):
@@ -322,6 +334,8 @@ class GameLoop(object):
         elif self.active_unit:
           self.active_unit.GiveOrder((fx, fy))
           self.active_unit = None
+          self.partial_order_to = None
+          self.partial_order_from = None
         continue
 
     # Next, check for scroll keys.
