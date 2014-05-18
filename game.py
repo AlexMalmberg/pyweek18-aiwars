@@ -115,3 +115,12 @@ class GameState(object):
     print('= Globals:')
     for n in self.glbls:
       print('%r' % n)
+
+  def Empty(self, x, y):
+    for n in self.nodes:
+      if (x >= n.pos.x
+          and y >= n.pos.y
+          and x < n.pos.x + n.size
+          and y < n.pos.y + n.size):
+        return False
+    return True

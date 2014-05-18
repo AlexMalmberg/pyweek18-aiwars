@@ -13,6 +13,9 @@ class World(object):
     self.height = height
     self.map = (ctypes.c_byte * height * width)()
 
+  def LandAt(self, x, y):
+    return self.map[x][y] == Land
+
 
 def LoadWorld(filename):
   with open(filename, 'rt') as f:
