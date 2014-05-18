@@ -100,19 +100,19 @@ def main():
     n9 = n_datacenter.Datacenter(vec.Vec(58, 10), country2, 0, 5e6)
     gs.AddNode(n9)
 
-    nc2 = n_city.City(vec.Vec(38, 3), country2, 10e6)
+    nc2 = n_city.City(vec.Vec(38, 3), country2, 1e6)
     gs.AddNode(nc2)
 
-    nc3 = n_city.City(vec.Vec(40, 13), country2, 20e6)
+    nc3 = n_city.City(vec.Vec(40, 13), country2, 2e6)
     gs.AddNode(nc3)
 
-    nc4 = n_city.City(vec.Vec(58, 12), country2, 20e6)
+    nc4 = n_city.City(vec.Vec(58, 12), country2, 5e6)
     gs.AddNode(nc4)
 
-    nc5 = n_city.City(vec.Vec(20, 3), country1, 20e6)
+    nc5 = n_city.City(vec.Vec(20, 3), country1, 0.5e6)
     gs.AddNode(nc5)
 
-    nc6 = n_city.City(vec.Vec(3, 2), country1, 20e6)
+    nc6 = n_city.City(vec.Vec(3, 2), country1, 3e6)
     gs.AddNode(nc6)
 
 
