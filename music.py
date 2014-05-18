@@ -6,7 +6,7 @@ class Music(object):
   IdleTime = 60.
 
   def __init__(self):
-    pygame.mixer.music.load('data/theme_final.ogg')
+    pygame.mixer.music.load('data/theme_stage_3.ogg')
     self.restart_time = 0
     self.playing = False
 
