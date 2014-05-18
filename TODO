@@ -76,7 +76,7 @@ O factory
 
 - phase 3
 
-T better node display
+* better node display
 
 T units
 T unit movement
@@ -92,8 +92,9 @@ O spontaneous riot
  - scrapped
 
 T military base
-T fake order
 T control unit
+O fake order
+ - scrapped
 
 
 - phase 4
@@ -101,15 +102,16 @@ T control unit
 T security companies trying to track you down
 T country diplomacy/wars
 T victory conditions
-T music
+* music
 T sound effects
 
-T maybe: time management
+O maybe: time management
+ - scrapped
 
 
 - phase 5
 
-T graphics
+* graphics
 
 
 - stuff that still need to be fleshed out
