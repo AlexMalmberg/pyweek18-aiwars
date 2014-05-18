@@ -45,3 +45,6 @@ class Factory(n_stealable.Stealable):
             + (', per_turn=%i, building=%r, target=%r, progress=%i'
                % (self.build_per_turn, self.building, self.target,
                   self.progress)))
+
+  def Description(self):
+    return 'factory'

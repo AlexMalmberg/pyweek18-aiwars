@@ -21,3 +21,6 @@ class Datacenter(n_stealable.Stealable):
   def __attrrepr__(self):
     return (super(Datacenter, self).__attrrepr__()
             + (', flops=%r' % misc.FormatFlops(self.flops)))
+
+  def Description(self):
+    return '%s datacenter' % misc.FormatFlops(self.flops)
