@@ -4,10 +4,13 @@ from OpenGL import GL
 
 import a_crack
 import action
+import crack
 import create
 import dialog
 import game
 import misc
+import n_datacenter
+import n_factory
 import render_state
 import research
 import text
@@ -41,10 +44,12 @@ import world_render
 
 
 class GameLoop(object):
-  def __init__(self, render, text, game_state):
+  def __init__(self, render, text, game_state, music):
     self.render = render
     self.text = text
     self.game_state = game_state
+    self.music = music
+
     self.world = self.game_state.world
     self.world_render = world_render.WorldRenderer(self.render, self.world)
     self.dialog = None
@@ -242,14 +247,12 @@ class GameLoop(object):
       self.render, self.text, self)
 
   def OpenDialogFor(self, n):
-    d = dialog.Dialog(self.render, self.text, self)
-    d.SetSize(0.6, 0.4)
-    d.Center()
-    d.AddElement(dialog.Text(0.3, 0.38, 0.04, (0, 0, 0, 1), True, 'Dialog'))
-    d.AddElement(dialog.Button(
-        0.1, 0.1, 0.4, 0.2, 0.1, self.CloseDialog, 'Crack!'))
-    d.Ready()
-    self.dialog = d
+    if isinstance(n, (n_factory.Factory, n_datacenter.Datacenter)):
+      try:
+        act = a_crack.Crack(self.game_state, n)
+        self.dialog = crack.CrackDialog(self.render, self.text, self, act)
+      except action.ImpossibleAction:
+        pass  # TODO: sound effect
 
   def CloseDialog(self):
     self.dialog = None
@@ -355,11 +358,12 @@ class GameLoop(object):
 
   def Play(self):
     clock = pygame.time.Clock()
+    self.music.Play()
 
     GL.glEnable(GL.GL_BLEND)
 
-    i = 0
     while not self.quit:
+      self.music.Update()
       dt = clock.tick()
 
       self.animation_time += dt
