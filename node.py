@@ -9,6 +9,7 @@ class Node(object):
     self.owner = owner
     self.original_owner = owner
     self.size = 1
+    self.health = self.max_health = 100
 
   def Flops(self):
     return 0

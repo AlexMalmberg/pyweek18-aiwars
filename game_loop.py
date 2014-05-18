@@ -1,5 +1,6 @@
 import math
 import pygame
+import random
 from OpenGL import GL
 
 import a_crack
@@ -189,7 +190,17 @@ class GameLoop(object):
 
     self.world_render.Draw()
     self.RenderNodes()
-    # TODO: Draw units + unit effects.
+
+    GL.glBegin(GL.GL_QUADS)
+    for x, y, size in self.game_state.explosions:
+      b = random.uniform(0, 1)
+      g = random.uniform(b, 1)
+      GL.glColor(1, g, b, 1)
+      GL.glVertex((x - size) * 3, (y - size) * 3)
+      GL.glVertex((x + size) * 3, (y - size) * 3)
+      GL.glVertex((x + size) * 3, (y + size) * 3)
+      GL.glVertex((x - size) * 3, (y + size) * 3)
+    GL.glEnd()
 
     if (self.button_pressed
         and self.partial_order_from

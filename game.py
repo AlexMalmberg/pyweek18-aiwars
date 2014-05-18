@@ -44,6 +44,9 @@ class GameState(object):
     self.action_progress = 0
     self.action_cost = 0
 
+    self.fighting = False
+    self.explosions = []
+
   def AddNode(self, node):
     self.nodes.append(node)
 
@@ -60,6 +63,8 @@ class GameState(object):
 
   def AdvanceTurn(self):
     self.turn += 1
+    self.fighting = False
+    self.explosions = []
     if self.current_action:
       self.action_progress += self.Flops()
       if self.action_progress > self.action_cost:
@@ -71,6 +76,20 @@ class GameState(object):
 
     for g in self.glbls:
       g.EndOfTurnUpdate(self)
+
+    # Clear out dead nodes.
+    nnodes = []
+    for n in self.nodes:
+      if n.health > 0:
+        nnodes.append(n)
+        # Slowly regen health when not attacked.
+        n.health += 1
+        if n.health > n.max_health:
+          n.health = n.max_health
+      else:
+        self.AddExplosion(n, 1.0)
+
+    self.nodes = nnodes
 
   def PopulationFlops(self):
     pop_flops = 0
@@ -116,11 +135,18 @@ class GameState(object):
     for n in self.glbls:
       print('%r' % n)
 
-  def Empty(self, x, y):
+  def NodeAt(self, x, y):
     for n in self.nodes:
       if (x >= n.pos.x
           and y >= n.pos.y
           and x < n.pos.x + n.size
           and y < n.pos.y + n.size):
-        return False
-    return True
+        return n
+    return None
+
+  def Empty(self, x, y):
+    return self.NodeAt(x, y) is None
+
+  def AddExplosion(self, n, size):
+    size *= n.size / 2.
+    self.explosions.append((n.pos.x + n.size / 2., n.pos.y + n.size / 2., size))

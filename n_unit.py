@@ -7,10 +7,10 @@ import node
 
 
 class Unit(node.Node):
-  def __init__(self, pos, owner, can_fly, icon, strength, move_div,
+  def __init__(self, pos, owner, can_fly, icon, strength, health, move_div,
                robotics_based):
     super(Unit, self).__init__(pos, owner)
-    self.health = 100
+    self.health = self.max_health = health
     self.icon = icon
     self.can_fly = can_fly
     self.strength = strength
@@ -81,16 +81,28 @@ class Unit(node.Node):
 
   def EndOfTurnUpdate(self, game_state):
     if self.robotics_based:
-      self.move_div = 9 - game_state.research_level[game.Research.Robotics]
-      self.strength = 1 + game_state.research_level[game.Research.Robotics] * 2
+      robo = game_state.research_level[game.Research.Robotics]
+      self.move_div = 9 - robo
+      self.strength = 1 + robo * 2
+      self.max_health = 20 + 20 * robo
 
     self.move_acc += 1
     if self.move_acc > self.move_div:
       self.move_acc = 0
       self.MoveOneStep(game_state)
 
-    # TODO: damage nearby units
-    pass
+    for dy in xrange(-1, 2):
+      for dx in xrange(-1, 2):
+        if not dx and not dy:
+          continue
+        n = game_state.NodeAt(self.pos.x + dx, self.pos.y + dy)
+        if not n:
+          continue
+        if n.owner == self.owner:
+          continue
+        n.health -= self.strength
+        game_state.fighting = True
+        game_state.AddExplosion(n, 0.5)
 
 
 class Nuke(Unit):
