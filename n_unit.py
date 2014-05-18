@@ -1,3 +1,5 @@
+import random
+
 import icons
 import game
 import misc
@@ -32,11 +34,19 @@ class Unit(node.Node):
     self.pos.y = y
     return True
 
+  def ReachedTarget(self):
+    pass
+
   def MoveOneStep(self, game_state):
     if not self.target:
       return
     dx = self.target[0] - self.pos.x
     dy = self.target[1] - self.pos.y
+
+    if not dx and not dy:
+      self.ReachedTarget()
+      self.target = None
+      return
 
     if dx and dy:
       if self.TryMove(game_state, misc.Sign(dx), misc.Sign(dy)):
@@ -45,7 +55,29 @@ class Unit(node.Node):
       if self.TryMove(game_state, misc.Sign(dx), 0):
         return
     if dy:
-      self.TryMove(game_state, 0, misc.Sign(dy))
+      if self.TryMove(game_state, 0, misc.Sign(dy)):
+        return
+
+    # Randomly try other directions to try to get unstuck.
+    if dx and not dy:
+      if random.randint(0, 1) == 0:
+        if self.TryMove(game_state, misc.Sign(dx), 1):
+          return
+        self.TryMove(game_state, misc.Sign(dx), -1)
+      else:
+        if self.TryMove(game_state, misc.Sign(dx), -1):
+          return
+        self.TryMove(game_state, misc.Sign(dx), 1)
+    else:
+      if random.randint(0, 1) == 0:
+        if self.TryMove(game_state, 1, misc.Sign(dy)):
+          return
+        self.TryMove(game_state, -1, misc.Sign(dy))
+      else:
+        if self.TryMove(game_state, -1, misc.Sign(dy)):
+          return
+        self.TryMove(game_state, 1, misc.Sign(dy))
+
 
   def EndOfTurnUpdate(self, game_state):
     if self.robotics_based:
@@ -65,5 +97,6 @@ class Nuke(Unit):
   def __init__(self, pos, owner):
     super(Nuke, self).__init__(pos, owner, True, icons.Bomb, 10, 1)
 
-  def ReachTarget(self):
+  def ReachedTarget(self):
+    # TODO: big explosion
     pass
