@@ -48,6 +48,9 @@ class GameState(object):
   def AddGlobal(self, g):
     self.glbls.append(g)
 
+  def RemoveGlobal(self, g):
+    self.glbls.remove(g)
+
   def SetCurrentAction(self, action):
     self.current_action = action
     self.action_cost = action.Cost()
