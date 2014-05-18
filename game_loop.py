@@ -195,7 +195,7 @@ class GameLoop(object):
     GL.glUseProgram(0)
 
   def RenderWorld(self):
-    GL.glPushMatrix(GL.GL_MODELVIEW)
+    GL.glPushMatrix()
     GL.glScale(self.world_scale, self.world_scale, 1)
     GL.glTranslate(self.world_translate[0], self.world_translate[1], 0)
 
@@ -368,11 +368,17 @@ class GameLoop(object):
 
       self.animation_time += dt
 
+      # Wrap animation at 1h to avoid overflows and stuff.
+      self.animation_time %= 1000 * 3600
+
       if not self.dialog:
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
           self.turn_time -= 1
+
+      self.render.animation_time = self.animation_time / 1000.
+      self.turn_time = self.turn_time
 
       self.Render(clock)
 

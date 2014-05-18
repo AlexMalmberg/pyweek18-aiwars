@@ -153,7 +153,7 @@ class Dialog(object):
     glVertex(-1.6,  1.0)
     glEnd()
 
-    glPushMatrix(GL_MODELVIEW_MATRIX)
+    glPushMatrix()
     glTranslate(self.x, self.y, 0)
 
     self.render.DrawSolidBoxWithBorder(
