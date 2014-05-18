@@ -34,7 +34,7 @@ class Unit(node.Node):
     self.pos.y = y
     return True
 
-  def ReachedTarget(self):
+  def ReachedTarget(self, game_state):
     pass
 
   def MoveOneStep(self, game_state):
@@ -44,7 +44,7 @@ class Unit(node.Node):
     dy = self.target[1] - self.pos.y
 
     if not dx and not dy:
-      self.ReachedTarget()
+      self.ReachedTarget(game_state)
       self.target = None
       return
 
@@ -93,6 +93,9 @@ class Unit(node.Node):
       self.move_acc = 0
       self.MoveOneStep(game_state)
 
+    if not self.strength:
+      return
+
     for dy in xrange(-1, 2):
       for dx in xrange(-1, 2):
         if not dx and not dy:
@@ -109,8 +112,24 @@ class Unit(node.Node):
 
 class Nuke(Unit):
   def __init__(self, pos, owner):
-    super(Nuke, self).__init__(pos, owner, True, icons.Bomb, 10, 1)
+    super(Nuke, self).__init__(pos, owner, True, icons.Bomb, 0, 1000, 1, False)
 
-  def ReachedTarget(self):
-    # TODO: big explosion
-    pass
+  def TryMove(self, game_state, dx, dy):
+    x = self.pos.x + dx
+    y = self.pos.y + dy
+    self.pos.x = x
+    self.pos.y = y
+    return True
+
+  def ReachedTarget(self, game_state):
+    game_state.AddExplosion(self, 3)
+    game_state.fighting = True
+    for dy in xrange(-2, 3):
+      for dx in xrange(-2, 3):
+        if not dx and not dy:
+          continue
+        n = game_state.NodeAt(self.pos.x + dx, self.pos.y + dy)
+        if not n:
+          continue
+        n.health = -100
+    self.health = -100

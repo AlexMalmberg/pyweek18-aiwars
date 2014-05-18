@@ -19,6 +19,7 @@ import n_unit
 import node_render
 import render_state
 import research
+import steal_nuke
 import text
 import world
 import world_render
@@ -255,6 +256,10 @@ class GameLoop(object):
       self.render, self.text, self)
 
   def OpenDialogFor(self, n):
+    if isinstance(n, n_military.Military) and n.control:
+      self.dialog = steal_nuke.StealNukeDialog(self.render, self.text, self, n)
+      return
+
     if isinstance(n, (n_factory.Factory, n_datacenter.Datacenter,
                       n_military.Military)):
       try:
@@ -262,6 +267,7 @@ class GameLoop(object):
         self.dialog = crack.CrackDialog(self.render, self.text, self, act)
       except action.ImpossibleAction:
         pass  # TODO: sound effect
+      return
 
     if isinstance(n, n_city.City):
       self.dialog = city.CityDialog(self.render, self.text, self, n)
