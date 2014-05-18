@@ -71,14 +71,6 @@ def main():
     n4 = n_factory.Factory(vec.Vec(8, 8), country2, 0, 4)
     gs.AddNode(n4)
 
-    unit1 = n_unit.Unit(
-      vec.Vec(10, 10), ai, True, icons.Bomber, 10, 100, 2, False)
-    gs.AddNode(unit1)
-
-    unit2 = n_unit.Unit(
-      vec.Vec(10, 11), ai, False, icons.KillerRobot, 10, 40, 4, True)
-    gs.AddNode(unit2)
-
     nf = n_factory.Factory(vec.Vec(50, 8), country2, 0, 4)
     gs.AddNode(nf)
 
