@@ -187,7 +187,7 @@ class GameLoop(object):
     self.RenderNodes()
     # TODO: Draw units + unit effects.
 
-    GL.glPopMatrix(GL.GL_MODELVIEW)
+    GL.glPopMatrix()
 
   def Render(self, clock):
     GL.glClear(GL.GL_COLOR_BUFFER_BIT)
@@ -364,7 +364,8 @@ class GameLoop(object):
 
       self.render.animation_time = self.animation_time / 1000.
       self.render.turn_time = self.turn_time
-      self.render.wireframe_frac = math.modf(self.animation_time / 10000.)[0]
+      #self.render.wireframe_frac = math.modf(self.animation_time / 10000.)[0]
+      self.render.wireframe_frac = 1.0
 
       self.Render(clock)
 

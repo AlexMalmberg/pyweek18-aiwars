@@ -169,7 +169,7 @@ class Dialog(object):
         a = 0
       e.Render(self.render, self.text, a)
 
-    glPopMatrix(GL_MODELVIEW_MATRIX)
+    glPopMatrix()
 
   def Close(self):
     self.game_loop.CloseDialog()
