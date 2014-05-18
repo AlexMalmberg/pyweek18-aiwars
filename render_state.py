@@ -367,8 +367,12 @@ void main(){
 
   def DrawBox(self, x, y, w, h, border, ca, cb):
     # TODO: wireframe glowy-line shader
-    glColor(*ca)
-    glNormal(*cb)
+    wf = self.wireframe_frac
+    nf = 1. - wf
+    col = (ca[0] * nf + cb[0] * wf,
+           ca[1] * nf + cb[2] * wf,
+           ca[1] * nf + cb[2] * wf)
+    glColor(col[0], col[1], col[2])
 
     glBegin(GL_QUADS)
 
