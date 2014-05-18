@@ -60,7 +60,7 @@ class ResearchDialog(dialog.Dialog):
       else:
         self.cost_text.msg = (
           'Upgrading to %i bits will take forever.'
-          % level + 2)
+          % (level + 2))
     except action.ImpossibleAction:
       self.cost_text.msg = 'Already at the highest level.'
 
