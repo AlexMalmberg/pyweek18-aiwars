@@ -2,6 +2,8 @@ import math
 
 
 import misc
+import n_city
+import n_unit
 
 
 class Research(object):
@@ -47,6 +49,10 @@ class GameState(object):
     self.fighting = False
     self.explosions = []
 
+    self.victory_flops = 0
+    self.victory_military = 0
+    self.victory_pop = 0
+
   def AddNode(self, node):
     self.nodes.append(node)
 
@@ -90,6 +96,34 @@ class GameState(object):
         self.AddExplosion(n, 1.0)
 
     self.nodes = nnodes
+    self.UpdateVictory()
+
+  def UpdateVictory(self):
+    pop_controlled = 0
+    pop_total = 0
+    military_controlled = 0
+    military_total = 0
+    for n in self.nodes:
+      if isinstance(n, n_city.City):
+        pop_controlled += 1 / 8. * n.nanotech_level
+        pop_total += 1
+      if isinstance(n, n_unit.Unit):
+        military_total += n.strength
+        if n.owner == self.ai_owner:
+          military_controlled += n.strength
+
+    flops_target = 1e9
+    self.victory_flops = self.Flops() / float(flops_target)
+    if military_total:
+      self.victory_military = military_controlled / float(military_total)
+    elif military_controlled:
+      self.victory_military = 1
+    else:
+      self.victory_military = 0
+    if pop_total:
+      self.victory_pop = pop_controlled / float(pop_total)
+    else:
+      self.victory_pop = 1
 
   def PopulationFlops(self):
     pop_flops = 0

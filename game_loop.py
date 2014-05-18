@@ -151,7 +151,7 @@ class GameLoop(object):
     flops = self.game_state.Flops()
 
     w = 1.0
-    h = 0.35
+    h = 0.55
     l = -w / 2
     r = l + w
     b = -1.0
@@ -167,8 +167,18 @@ class GameLoop(object):
                           misc.FormatFlops(flops),
                           right=True)
 
+    self.text.DrawString((l + r) / 2., t - 0.15, 0.05, self.render.TextColor(),
+                         '%3.0f%% of population controlled'
+                         % (self.game_state.victory_pop * 100.),
+                         center=True)
+
+    self.text.DrawString((l + r) / 2., t - 0.20, 0.05, self.render.TextColor(),
+                         '%3.0f%% of military controlled'
+                         % (self.game_state.victory_military * 100.),
+                         center=True)
+
     if self.game_state.current_action:
-      self.text.DrawString((l + r) / 2, t - 0.19, 0.05,
+      self.text.DrawString((l + r) / 2, t - 0.29, 0.05,
                            self.render.TextColor(),
                            self.game_state.current_action.Description(),
                            center=True)
@@ -181,7 +191,7 @@ class GameLoop(object):
         0.1,
         progress)
     else:
-      self.text.DrawString((l + r) / 2, t - 0.25, 0.05, self.render.TextColor(),
+      self.text.DrawString((l + r) / 2, t - 0.35, 0.05, self.render.TextColor(),
                           'Idle', center=True)
 
   def RenderNodes(self):
