@@ -24,18 +24,9 @@ class Factory(n_stealable.Stealable):
     super(Factory, self).EndOfTurnUpdate(game_state)
 
   def BuildOne(self, game_state):
-    for dy in xrange(-1, 2):
-      for dx in xrange(-1, 2):
-        if not dx and not dy:
-          continue
-        tx = self.pos.x + dx
-        ty = self.pos.y + dy
-        if not game_state.Empty(tx, ty):
-          continue
-        if not game_state.world.LandAt(tx, ty):
-          continue
-        self.PlaceUnitAt(game_state, tx, ty)
-        return
+    where = game_state.EmptySquareNear(self.pos.x, self.pos.y)
+    if where:
+      self.PlaceUnitAt(game_state, where[0], where[1])
 
   def PlaceUnitAt(self, game_state, tx, ty):
     unit = n_unit.Unit(

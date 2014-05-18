@@ -1,3 +1,4 @@
+import a_riot
 import dialog
 import game
 
@@ -11,7 +12,9 @@ class CityDialog(dialog.Dialog):
     flavors = []
 
     psych = game_loop.game_state.research_level[game.Research.Psychology]
+    self.psych = psych
     nano = game_loop.game_state.research_level[game.Research.Nanotech]
+    self.nano = nano
 
     riot_strength = [
       'very weak',
@@ -22,7 +25,8 @@ class CityDialog(dialog.Dialog):
       'strong',
       'very strong',
       'insanely strong']
-    flavors += ['You can incite a riot. Using',
+    flavors += ['You can use social media to start',
+                'flamewars and incite a riot. Using',
                 '%i-bit psychology, your riot' % (psych + 1),
                 'will be %s.' % riot_strength[psych]]
     self.AddElement(
@@ -46,6 +50,7 @@ class CityDialog(dialog.Dialog):
         'brain implants',
         'mind uploading']
       target_nano = c_nano + 1
+      self.target_nano = target_nano
       flavors += ['Or you can start uploading the',
                   'population\'s minds using awesome',
                   '%i-bit %s.' % ((target_nano + 1), flavor_nano[target_nano])]
@@ -73,7 +78,11 @@ class CityDialog(dialog.Dialog):
     self.Ready()
 
   def Riot(self):
+    self.game_loop.game_state.SetCurrentAction(
+      a_riot.Riot(self.game_loop.game_state, self.target))
     self.Close()
 
   def Nanotech(self):
+    self.game_loop.game_state.SetCurrentAction(
+      a_upload.Upload(self.game_loop.game_state, self.target_nano, self.target))
     self.Close()

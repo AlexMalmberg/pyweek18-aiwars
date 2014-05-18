@@ -150,3 +150,17 @@ class GameState(object):
   def AddExplosion(self, n, size):
     size *= n.size / 2.
     self.explosions.append((n.pos.x + n.size / 2., n.pos.y + n.size / 2., size))
+
+  def EmptySquareNear(self, x, y):
+    for dy in xrange(-1, 2):
+      for dx in xrange(-1, 2):
+        if not dx and not dy:
+          continue
+        tx = x + dx
+        ty = y + dy
+        if not self.Empty(tx, ty):
+          continue
+        if not self.world.LandAt(tx, ty):
+          continue
+        return (tx, ty)
+    return None
