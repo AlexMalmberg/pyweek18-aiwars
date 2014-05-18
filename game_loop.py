@@ -7,9 +7,11 @@ import a_crack
 import action
 import crack
 import create
+import city
 import dialog
 import game
 import misc
+import n_city
 import n_datacenter
 import n_factory
 import n_unit
@@ -238,10 +240,7 @@ class GameLoop(object):
     return x / 3., y / 3.
 
   def NodeAt(self, x, y):
-    for n in self.game_state.nodes:
-      if n.pos.x == x and n.pos.y == y:
-        return n
-    return None
+    return self.game_state.NodeAt(x, y)
 
   def OpenResearchDialog(self):
     self.dialog = research.ResearchDialog(self.render, self.text, self)
@@ -261,6 +260,9 @@ class GameLoop(object):
         self.dialog = crack.CrackDialog(self.render, self.text, self, act)
       except action.ImpossibleAction:
         pass  # TODO: sound effect
+
+    if isinstance(n, n_city.City):
+      self.dialog = city.CityDialog(self.render, self.text, self, n)
 
   def CloseDialog(self):
     self.dialog = None
