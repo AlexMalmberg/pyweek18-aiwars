@@ -8,4 +8,5 @@ Bomber = 6
 Riot = 7
 Security = 8
 Military = 9
-Num = 10
+Black = 10
+Num = 11
