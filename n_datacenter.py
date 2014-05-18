@@ -1,8 +1,11 @@
+import icons
 import misc
 import n_stealable
 
 
 class Datacenter(n_stealable.Stealable):
+  icon = icons.DataCenter
+
   def __init__(self, pos, crack_defense, flops):
     super(Datacenter, self).__init__(pos, crack_defense)
     self.flops = int(flops)

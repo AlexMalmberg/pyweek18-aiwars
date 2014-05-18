@@ -1,0 +1,10 @@
+City = 0
+Factory = 1
+DataCenter = 2
+Bomb = 3
+KillerRobot = 4
+Tank = 5
+Bomber = 6
+Riot = 7
+Security = 8
+Num = 9

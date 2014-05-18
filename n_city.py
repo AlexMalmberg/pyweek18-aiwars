@@ -1,7 +1,10 @@
+import icons
 import node
 
 
 class City(node.Node):
+  icon = icons.City
+
   def __init__(self, pos, population):
     super(City, self).__init__(pos)
     self.population = population
