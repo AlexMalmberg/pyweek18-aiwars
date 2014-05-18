@@ -13,7 +13,7 @@ class CrackDialog(dialog.Dialog):
                '%s.' % n.Description()]
 
     w = 1.2
-    h = 0.5 + len(flavors) * 0.05
+    h = 0.55 + len(flavors) * 0.05
     self.SetSize(w, h)
     self.Center()
 
