@@ -409,8 +409,11 @@ class GameLoop(object):
 
       self.render.animation_time = self.animation_time / 1000.
       self.render.turn_time = self.turn_time
-      self.render.wireframe_frac = math.modf(self.animation_time / 60000.)[0]
-      #self.render.wireframe_frac = 1.0
+      #self.render.wireframe_frac = math.modf(self.animation_time / 60000.)[0]
+      self.render.wireframe_frac = max(
+        self.game_state.victory_flops,
+        self.game_state.victory_military,
+        self.game_state.victory_pop)
 
       self.Render(clock)
 

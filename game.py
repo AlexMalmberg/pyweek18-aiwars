@@ -112,7 +112,7 @@ class GameState(object):
         if n.owner == self.ai_owner:
           military_controlled += n.strength
 
-    flops_target = 1e9
+    flops_target = 3e8
     self.victory_flops = self.Flops() / float(flops_target)
     if military_total:
       self.victory_military = military_controlled / float(military_total)
