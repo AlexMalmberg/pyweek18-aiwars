@@ -52,7 +52,8 @@ def main():
 
   if 1:
     #for i in xrange(100):
-    #  nc = n_city.City(vec.Vec(i * 47 % w.width, i * 9486 % w.height), 1e6)
+    #  nc = n_city.City(vec.Vec(i * 47 % w.width, i * 9486 % w.height),
+    #                   country1, 1e6)
     #  gs.AddNode(nc)
     nc = n_city.City(vec.Vec(14, 14), country1, 1e6)
     gs.AddNode(nc)
