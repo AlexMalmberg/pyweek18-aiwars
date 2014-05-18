@@ -35,9 +35,9 @@ class NodeRenderer(object):
       x, y = n.pos.x, n.pos.y
       col = n.owner.color
       icon = self.render.icon_node_map[n.icon]
-      rofs1 = self.random_offsets[i]
+      rofs1 = self.random_offsets[i % len(self.random_offsets)]
       i += 1
-      rofs2 = self.random_offsets[i]
+      rofs2 = self.random_offsets[i % len(self.random_offsets)]
       i += 1
 
       l = 3 * x
@@ -73,7 +73,7 @@ class NodeRenderer(object):
           col[0], col[1], col[2]]
       self.icon_num += 8
 
-      rofs1 = self.random_offsets[i]
+      rofs1 = self.random_offsets[i % len(self.random_offsets)]
       i += 1
       border_buf += [
         l, b, rofs1 + 0, col[0], col[1], col[2],
