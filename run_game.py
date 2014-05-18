@@ -14,9 +14,11 @@ import render_state
 import text
 import world
 
+import icons
 import n_city
 import n_datacenter
 import n_factory
+import n_unit
 import owner
 import vec
 
@@ -69,6 +71,12 @@ def main():
 
     n4 = n_factory.Factory(vec.Vec(8, 8), country2, 0, 4)
     gs.AddNode(n4)
+
+    n5 = n_unit.Unit(vec.Vec(10, 10), ai, True, icons.Bomber, 10, 2, False)
+    gs.AddNode(n5)
+
+    n6 = n_unit.Unit(vec.Vec(10, 11), ai, False, icons.KillerRobot, 10, 4, True)
+    gs.AddNode(n6)
 
   gl = game_loop.GameLoop(render, t, gs, m)
   gl.Play()

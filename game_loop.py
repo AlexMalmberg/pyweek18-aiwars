@@ -11,6 +11,7 @@ import game
 import misc
 import n_datacenter
 import n_factory
+import n_unit
 import node_render
 import render_state
 import research
@@ -68,6 +69,9 @@ class GameLoop(object):
     self.active_element = None
     self.active_node = None
     self.active_unit = None
+
+    self.partial_order_from = None
+    self.partial_order_to = None
 
     self.PrepareHud()
 
@@ -217,9 +221,6 @@ class GameLoop(object):
         return n
     return None
 
-  def UnitAt(self, x, y):
-    return None
-
   def OpenResearchDialog(self):
     self.dialog = research.ResearchDialog(self.render, self.text, self)
 
@@ -274,17 +275,17 @@ class GameLoop(object):
           self.button_pressed = True
           continue
 
-        # TODO: check units
-        u = self.UnitAt(fx, fy)
-        if u:
-          self.active_unit = u
-          self.button_pressed = True
-          continue
-
         # Finally nodes.
         n = self.NodeAt(fx, fy)
         if n is not None:
-          self.OpenDialogFor(n)
+          if isinstance(n, n_unit.Unit):
+            if n.owner == self.game_state.ai_owner:
+              self.active_unit = n
+              self.partial_order_from = (wx, wy)
+              self.partial_order_to = (wx, wy)
+              self.button_pressed = True
+          else:
+            self.OpenDialogFor(n)
         continue
 
       if e.type == pygame.MOUSEMOTION:
@@ -299,15 +300,13 @@ class GameLoop(object):
             # here, anyway.
             pass
           elif self.active_unit:
-            pass  # TODO: update in-flight order with arrow
+            self.partial_order_to = (wx, wy)
         else:
           # For highlighting mouse-over'd stuff.
           self.active_node = self.active_unit = None
           self.active_element = self.ElementAt(x, y)
           if not self.active_element:
             self.active_node = self.NodeAt(fx, fy)
-            if not self.active_node:
-              self.active_unit = self.UnitAt(fx, fy)
         continue
 
       if e.type == pygame.MOUSEBUTTONUP and e.button == 1:
@@ -322,7 +321,8 @@ class GameLoop(object):
           # Nodes do nothing when dragged.
           pass
         elif self.active_unit:
-          pass  # TODO: issue order
+          self.active_unit.GiveOrder((fx, fy))
+          self.active_unit = None
         continue
 
     # Next, check for scroll keys.
@@ -356,7 +356,7 @@ class GameLoop(object):
       # Wrap animation at 1h to avoid overflows and stuff.
       self.animation_time %= 1000 * 3600
 
-      if not self.dialog:
+      if not self.dialog and not self.button_pressed:
         self.turn_time += dt / self.turn_rate
         while self.turn_time > 1:
           self.game_state.AdvanceTurn()
