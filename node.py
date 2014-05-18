@@ -2,10 +2,11 @@ import misc
 
 
 class Node(object):
-  def __init__(self, pos):
+  def __init__(self, pos, owner):
     self.pos = pos
     self.control = False
     self.immune_until = 0
+    self.owner = owner
 
   def Flops(self):
     return 0

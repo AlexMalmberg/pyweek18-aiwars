@@ -17,6 +17,7 @@ import world
 import n_city
 import n_datacenter
 import n_factory
+import owner
 import vec
 
 
@@ -44,24 +45,28 @@ def main():
 
   m = music.Music()
 
-  gs = game.GameState(w)
+  ai = owner.Owner(True, (0, 1, 0, 1))
+  country1 = owner.Owner(False, (1, 0, 0, 1))
+  country2 = owner.Owner(False, (0, 0, 1, 1))
+  gs = game.GameState(w, [ai, country1, country2])
 
   if 1:
     #for i in xrange(100):
     #  nc = n_city.City(vec.Vec(i * 47 % w.width, i * 9486 % w.height), 1e6)
     #  gs.AddNode(nc)
-    nc = n_city.City(vec.Vec(15, 15), 1e6)
+    nc = n_city.City(vec.Vec(15, 15), country1, 1e6)
     gs.AddNode(nc)
 
-    n1 = n_datacenter.Datacenter(vec.Vec(5, 5), 1, 2.4e6)
+    n1 = n_datacenter.Datacenter(vec.Vec(5, 5), country1, 1, 2.4e6)
     gs.AddNode(n1)
 
-    n2 = n_datacenter.Datacenter(vec.Vec(6, 6), 0, 1.5e6)
+    n2 = n_datacenter.Datacenter(vec.Vec(6, 6), country2, 0, 1.5e6)
     gs.AddNode(n2)
     n2.control = True
+    n2.owner = ai
     n2.steal_fraction = 20
 
-    n4 = n_factory.Factory(vec.Vec(8, 8), 0, 4)
+    n4 = n_factory.Factory(vec.Vec(8, 8), country2, 0, 4)
     gs.AddNode(n4)
 
   gl = game_loop.GameLoop(render, t, gs, m)

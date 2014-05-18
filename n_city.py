@@ -5,8 +5,8 @@ import node
 class City(node.Node):
   icon = icons.City
 
-  def __init__(self, pos, population):
-    super(City, self).__init__(pos)
+  def __init__(self, pos, owner, population):
+    super(City, self).__init__(pos, owner)
     self.population = population
     self.nanotech_level = 0
 

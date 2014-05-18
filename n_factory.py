@@ -6,8 +6,8 @@ import n_stealable
 class Factory(n_stealable.Stealable):
   icon = icons.Factory
 
-  def __init__(self, pos, crack_defense, build_per_turn):
-    super(Factory, self).__init__(pos, crack_defense)
+  def __init__(self, pos, owner, crack_defense, build_per_turn):
+    super(Factory, self).__init__(pos, owner, crack_defense)
     self.build_per_turn = build_per_turn
     self.building = False
     self.target = None

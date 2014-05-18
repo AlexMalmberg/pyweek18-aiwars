@@ -26,8 +26,9 @@ class Research(object):
 
 
 class GameState(object):
-  def __init__(self, world):
+  def __init__(self, world, owners):
     self.world = world
+    self.owners = owners
     self.nodes = []
     self.glbls = []
     self.research_level = [0] * Research.Num

@@ -8,8 +8,8 @@ import random
 
 
 class Stealable(node.Node):
-  def __init__(self, pos, crack_defense):
-    super(Stealable, self).__init__(pos)
+  def __init__(self, pos, owner, crack_defense):
+    super(Stealable, self).__init__(pos, owner)
     self.crack_defense = crack_defense
     self.steal_fraction = 0
 
