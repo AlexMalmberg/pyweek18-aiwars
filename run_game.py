@@ -9,6 +9,7 @@ from OpenGL import GL
 
 import game
 import game_loop
+import music
 import render_state
 import text
 import world
@@ -41,6 +42,8 @@ def main():
 
   w = world.LoadWorld('data/world0.map')
 
+  m = music.Music()
+
   gs = game.GameState(w)
 
   if 1:
@@ -61,7 +64,7 @@ def main():
     n4 = n_factory.Factory(vec.Vec(8, 8), 0, 4)
     gs.AddNode(n4)
 
-  gl = game_loop.GameLoop(render, t, gs)
+  gl = game_loop.GameLoop(render, t, gs, m)
   gl.Play()
 
 
