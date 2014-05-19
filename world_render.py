@@ -31,7 +31,6 @@ class WorldRenderer(object):
     self.z_ic_num = render.z_ic_num
     self.z_oc = render.z_oc
     self.z_oc_num = render.z_oc_num
-    self.prg = render.tile_shader
     self._PrepareRendering()
 
   def __del__(self):
@@ -218,10 +217,6 @@ class WorldRenderer(object):
                  GL_STATIC_DRAW)
 
   def Draw(self):
-    #glUseProgram(self.prg)
-    #glBindTexture(GL_TEXTURE_2D_ARRAY, self.texture)
-    #l = glGetUniformLocation(self.prg, b'texture_atlas')
-    #glUniform1i(l, 0)
     self.render.TexturePulseShaderTile()
     glColor(0, 1, 0, 1)
     glBindBuffer(GL_ARRAY_BUFFER, self.vbo_vert)
