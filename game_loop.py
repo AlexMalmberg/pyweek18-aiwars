@@ -240,9 +240,9 @@ class GameLoop(object):
     if self.dialog:
       self.dialog.Render()
 
-    self.text.DrawString(-1.6, 0.95, 0.05, (1, 1, 1, 1), str(clock))
-    self.text.DrawString(-1.6, 0.90, 0.05, (1, 1, 1, 1),
-                          '%i %5.3f' % (self.animation_time, self.turn_time))
+    #self.text.DrawString(-1.6, 0.95, 0.05, (1, 1, 1, 1), str(clock))
+    #self.text.DrawString(-1.6, 0.90, 0.05, (1, 1, 1, 1),
+    #                      '%i %5.3f' % (self.animation_time, self.turn_time))
     pygame.display.flip()
 
   def ScreenToWorld(self, x, y):
