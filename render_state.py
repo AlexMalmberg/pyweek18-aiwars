@@ -8,6 +8,9 @@ import game
 import icons
 
 
+UseTextureArrays = True
+
+
 F = ctypes.sizeof(ctypes.c_float)
 FP = lambda x: ctypes.cast(x * F, ctypes.POINTER(ctypes.c_float))
 
@@ -81,25 +84,6 @@ class Render(object):
       ['data/icon_%s_line.png' % f for f in files])
 
     # Shaders.
-    self.tile_shader = self.BuildShader('tile shader', """
-#version 120
-
-void main() {
-  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-  gl_TexCoord[0].xyz = gl_MultiTexCoord0.xyz;
-}
-
-""", """
-#version 130
-
-uniform sampler2DArray texture_atlas;
-
-void main(){
-  gl_FragColor = texture(texture_atlas, gl_TexCoord[0].xyz);
-}
-""")
-
-
 # Texture:
 # At each point, need:
 # - Color of pulse. gl_Color.rgb
@@ -156,7 +140,7 @@ void main(){
     #
     # r = tr * a / (1 - a) + gr * ga / (1 - a) * (1 - ga)
 
-    self.texture_pulse_shader = self.BuildShader('solid pulse shader', """
+    self.texture_pulse_shader = self.BuildShader('texture pulse shader', """
 #version 120
 
 varying vec4 color;
@@ -190,6 +174,48 @@ varying float sampler_scale;
 void main(){
   vec4 base_color = texture(color_tex, gl_TexCoord[0].xyz) * base_strength;
   vec4 line_color = texture(line_tex, gl_TexCoord[0].xyz);
+
+  float stroke_dist = line_color.r * sampler_scale + sampler_offset;
+  float offset = global_pulse_offset + stroke_dist * global_pulse_scale;
+  float pulse = 2.0 * texture1D(line_pulse, offset);
+  pulse *= pulse_strength;
+
+  vec4 pulse_col;
+  if (pulse > 1)
+    pulse_col = mix(color, vec4(1, 1, 1, 1), pulse - 1);
+  else
+    pulse_col = mix(vec4(0, 0, 0, 1), color, pulse);
+
+  gl_FragColor = base_color + line_color.a * pulse_col;
+}
+""" if UseTextureArrays else """
+#version 120
+
+uniform sampler2D color_tex;
+uniform sampler2D line_tex;
+
+uniform sampler1D line_pulse;
+uniform float global_pulse_offset;
+uniform float global_pulse_scale;
+
+uniform float base_strength;
+uniform float pulse_strength;
+
+varying vec4 color;
+varying float sampler_offset;
+varying float sampler_scale;
+
+void main(){
+  vec3 texcoord = gl_TexCoord[0].xyz;
+  texcoord.x /= 16.;
+  texcoord.y /= 8.;
+  int i = int(texcoord.z);
+  int j = i / 16;
+  int k = i - j * 16;
+  texcoord.x += 1 / 16. * k;
+  texcoord.y += 1 / 8. * j;
+  vec4 base_color = texture2D(color_tex, texcoord.xy) * base_strength;
+  vec4 line_color = texture2D(line_tex, texcoord.xy);
 
   float stroke_dist = line_color.r * sampler_scale + sampler_offset;
   float offset = global_pulse_offset + stroke_dist * global_pulse_scale;
@@ -241,12 +267,18 @@ void main(){
     self._TexturePulseShaderCommon()
 
     glActiveTexture(GL_TEXTURE1)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_line_textures)
+    if UseTextureArrays:
+      glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_line_textures)
+    else:
+      glBindTexture(GL_TEXTURE_2D, self.tile_line_textures)
     l = glGetUniformLocation(prg, b'line_tex')
     glUniform1i(l, 1)
 
     glActiveTexture(GL_TEXTURE0)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_col_textures)
+    if UseTextureArrays:
+      glBindTexture(GL_TEXTURE_2D_ARRAY, self.tile_col_textures)
+    else:
+      glBindTexture(GL_TEXTURE_2D, self.tile_col_textures)
     l = glGetUniformLocation(prg, b'color_tex')
     glUniform1i(l, 0)
 
@@ -255,12 +287,18 @@ void main(){
     self._TexturePulseShaderCommon()
 
     glActiveTexture(GL_TEXTURE1)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_line_textures)
+    if UseTextureArrays:
+      glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_line_textures)
+    else:
+      glBindTexture(GL_TEXTURE_2D, self.icon_line_textures)
     l = glGetUniformLocation(prg, b'line_tex')
     glUniform1i(l, 1)
 
     glActiveTexture(GL_TEXTURE0)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_col_textures)
+    if UseTextureArrays:
+      glBindTexture(GL_TEXTURE_2D_ARRAY, self.icon_col_textures)
+    else:
+      glBindTexture(GL_TEXTURE_2D, self.icon_col_textures)
     l = glGetUniformLocation(prg, b'color_tex')
     glUniform1i(l, 0)
 
@@ -313,31 +351,64 @@ void main(){
 
   def LoadTextureArray(self, files):
     t = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D_ARRAY, t)
     surfs = [pygame.image.load(f) for f in files]
     width = surfs[0].get_width()
     height = surfs[0].get_height()
+    if UseTextureArrays:
+      glBindTexture(GL_TEXTURE_2D_ARRAY, t)
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER,
-                    GL_LINEAR)
-    glTexParameter(GL_TEXTURE_2D_ARRAY, GL_GENERATE_MIPMAP, GL_TRUE)
-    glTexParameter(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S,
-                   GL_CLAMP_TO_EDGE)
-    glTexParameter(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T,
-                   GL_CLAMP_TO_EDGE)
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER,
+                      GL_LINEAR_MIPMAP_LINEAR)
+      glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER,
+                      GL_LINEAR)
+      glTexParameter(GL_TEXTURE_2D_ARRAY, GL_GENERATE_MIPMAP, GL_TRUE)
+      glTexParameter(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S,
+                     GL_CLAMP_TO_EDGE)
+      glTexParameter(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T,
+                     GL_CLAMP_TO_EDGE)
 
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8,
-                 width, height, len(files), 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE,
-                 None)
+      glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8,
+                   width, height, len(files), 0,
+                   GL_RGBA, GL_UNSIGNED_BYTE,
+                   None)
 
-    for i, s in enumerate(surfs):
-      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0,
-                      0, 0, i, width, height, 1,
-                      GL_RGBA, GL_UNSIGNED_BYTE,
-                      pygame.image.tostring(s, 'RGBA', 1))
+      for i, s in enumerate(surfs):
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0,
+                        0, 0, i, width, height, 1,
+                        GL_RGBA, GL_UNSIGNED_BYTE,
+                        pygame.image.tostring(s, 'RGBA', 1))
+
+    else:
+      print 'LoadTextureArray into atlas: %i' % len(files)
+      print 'base size: %i x %i' % (width, height)
+      glBindTexture(GL_TEXTURE_2D, t)
+
+      aw = 16 * width
+      ah = 8 * height
+      print 'cramming into a %i x %i atlas' % (aw, ah)
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      GL_LINEAR_MIPMAP_LINEAR)
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                      GL_LINEAR)
+      glTexParameter(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
+      glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                     GL_CLAMP_TO_EDGE)
+      glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                     GL_CLAMP_TO_EDGE)
+
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
+                   aw, ah, 0,
+                   GL_RGBA, GL_UNSIGNED_BYTE,
+                   None)
+
+      for i, s in enumerate(surfs):
+        xo = (i % 16) * width
+        yo = (i / 16) * height
+        glTexSubImage2D(GL_TEXTURE_2D, 0,
+                        xo, yo, width, height,
+                        GL_RGBA, GL_UNSIGNED_BYTE,
+                        pygame.image.tostring(s, 'RGBA', 1))
 
     return t
 
