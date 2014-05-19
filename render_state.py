@@ -120,7 +120,7 @@ varying float stroke_distance;
 
 void main(){
   float offset = global_pulse_offset + stroke_distance * global_pulse_scale;
-  float pulse = 2.0 * texture1D(line_pulse, offset);
+  float pulse = 2.0 * texture1D(line_pulse, offset).r;
 
   vec4 col;
   if (pulse > 1)
@@ -177,7 +177,7 @@ void main(){
 
   float stroke_dist = line_color.r * sampler_scale + sampler_offset;
   float offset = global_pulse_offset + stroke_dist * global_pulse_scale;
-  float pulse = 2.0 * texture1D(line_pulse, offset);
+  float pulse = 2.0 * texture1D(line_pulse, offset).r;
   pulse *= pulse_strength;
 
   vec4 pulse_col;
@@ -219,7 +219,7 @@ void main(){
 
   float stroke_dist = line_color.r * sampler_scale + sampler_offset;
   float offset = global_pulse_offset + stroke_dist * global_pulse_scale;
-  float pulse = 2.0 * texture1D(line_pulse, offset);
+  float pulse = 2.0 * texture1D(line_pulse, offset).r;
   pulse *= pulse_strength;
 
   vec4 pulse_col;
