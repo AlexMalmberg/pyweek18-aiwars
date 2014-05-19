@@ -17,7 +17,7 @@ class Action(object):
   def _CostAttackDefense(self, base_cost, attack, defense):
     cost = defense + 0.5 * (defense - attack)
     cost *= 1.3
-    cost = base_cost * 10 ** cost
+    cost = base_cost * 6 ** cost
     cost = int(cost)
     if cost > 0:
       return cost
@@ -26,7 +26,7 @@ class Action(object):
 
   def _CostLevel(self, base_cost, level):
     cost = level * 1.3
-    cost = base_cost * 10 ** cost
+    cost = base_cost * 6 ** cost
     cost = int(cost)
     if cost > 0:
       return cost
